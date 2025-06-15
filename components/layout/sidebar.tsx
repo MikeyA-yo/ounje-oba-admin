@@ -11,44 +11,7 @@ import { Icon } from "@iconify/react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-
-const sidebarItems = [
-  {
-    name: "Dashboard",
-    url: "/",
-    icon: <Icon icon="hugeicons:dashboard-square-02" />,
-  },
-  {
-    name: "Product Management",
-    url: "/products",
-    icon: <Icon icon="hugeicons:tags" />,
-  },
-  {
-    name: "Order Management",
-    url: "/orders",
-    icon: <Icon icon="hugeicons:delivery-box-01" />,
-  },
-  {
-    name: "Customers",
-    url: "/customers",
-    icon: <Icon icon="hugeicons:user-multiple" />,
-  },
-  {
-    name: "Transactions",
-    url: "/transactions",
-    icon: <Icon icon="hugeicons:arrow-data-transfer-horizontal" />,
-  },
-  {
-    name: "Coupons",
-    url: "/coupons",
-    icon: <Icon icon="hugeicons:discount" />,
-  },
-  {
-    name: "Reports",
-    url: "/reports",
-    icon: <Icon icon="hugeicons:analytics-03" />,
-  },
-];
+import { data } from "@/data/routes";
 
 export function AppSidebar() {
   const route = usePathname();
@@ -62,7 +25,7 @@ export function AppSidebar() {
       </SidebarHeader>
       <SidebarContent className="py-8 px-6">
         <ul className="space-y-2">
-          {sidebarItems.map((item) => (
+          {data.map((item) => (
             <li
               key={item.name}
               className={cn(
@@ -70,7 +33,7 @@ export function AppSidebar() {
                 route === item.url && "bg-primary text-white",
               )}
             >
-              {item.icon}
+              <Icon icon={item.icon} />
               <Link href={item.url}>{item.name}</Link>
             </li>
           ))}

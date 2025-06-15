@@ -4,6 +4,7 @@ import "./globals.css";
 import { Navbar } from "@/components/layout/header";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/layout/sidebar";
+import { SectionHeader } from "@/components/layout/section-header";
 
 const albert = Albert_Sans({
   subsets: ["latin"],
@@ -26,7 +27,10 @@ export default function RootLayout({
           <AppSidebar />
           <main className="w-full h-full">
             <Navbar />
-            {children}
+            <div className="p-5">
+              <SectionHeader />
+              {children}
+            </div>
           </main>
         </SidebarProvider>
       </body>
