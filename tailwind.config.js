@@ -5,9 +5,6 @@ module.exports = {
     "./app/**/*.{js,ts,jsx,tsx,mdx}",
     "./pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./components/**/*.{js,ts,jsx,tsx,mdx}",
-
-    // Or if using `src` directory:
-    "./src/**/*.{js,ts,jsx,tsx,mdx}",
   ],
   theme: {
     extend: {
@@ -19,7 +16,6 @@ module.exports = {
       colors: {
         white: "#FCFCFC",
         black: {
-          DEFAULT: "#2E2E2E",
           100: "#D5D5D5",
           200: "#B9B9B9",
           300: "#979797",
@@ -30,6 +26,7 @@ module.exports = {
           800: "#171717",
           900: "#0F0F0F",
           1000: "#090909",
+          DEFAULT: "#2E2E2E",
         },
         primary: {
           DEFAULT: "#5C1978",
@@ -45,7 +42,6 @@ module.exports = {
           1000: "#120518",
         },
         "secondary-one": {
-          DEFAULT: "#F29B4C",
           100: "#FCEBDB",
           200: "#FBDEC3",
           300: "#F8CDA5",
@@ -56,8 +52,22 @@ module.exports = {
           800: "#794D26",
           900: "#513419",
           1000: "#301F0F",
+          DEFAULT: "#F29B4C",
         },
         "secondary-two": {},
+        grey: {
+          100: "#FAFAFA",
+          200: "#E0E0E0",
+          300: "#CBCBCB",
+          400: "#B6B6B6",
+          500: "#A1A1A1",
+          600: "#8B8B8B",
+          700: "#767676",
+          800: "#616161",
+          900: "#4C4C4C",
+          1000: "#373737",
+          DEFAULT: "#F5F5F5",
+        },
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
         card: {
@@ -67,10 +77,6 @@ module.exports = {
         popover: {
           DEFAULT: "hsl(var(--popover))",
           foreground: "hsl(var(--popover-foreground))",
-        },
-        primary: {
-          DEFAULT: "hsl(var(--primary))",
-          foreground: "hsl(var(--primary-foreground))",
         },
         secondary: {
           DEFAULT: "hsl(var(--secondary))",
@@ -88,7 +94,7 @@ module.exports = {
           DEFAULT: "hsl(var(--destructive))",
           foreground: "hsl(var(--destructive-foreground))",
         },
-        border: "hsl(var(--border))",
+        border: "#EBEBEB",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
         chart: {
@@ -97,6 +103,16 @@ module.exports = {
           3: "hsl(var(--chart-3))",
           4: "hsl(var(--chart-4))",
           5: "hsl(var(--chart-5))",
+        },
+        sidebar: {
+          DEFAULT: "#fff",
+          foreground: "hsl(var(--sidebar-foreground))",
+          primary: "hsl(var(--sidebar-primary))",
+          "primary-foreground": "hsl(var(--sidebar-primary-foreground))",
+          accent: "hsl(var(--sidebar-accent))",
+          "accent-foreground": "hsl(var(--sidebar-accent-foreground))",
+          border: "hsl(var(--sidebar-border))",
+          ring: "hsl(var(--sidebar-ring))",
         },
       },
     },
