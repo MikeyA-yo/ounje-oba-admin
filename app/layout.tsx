@@ -27,10 +27,7 @@ export default function RootLayout({
           <AppSidebar />
           <main className="w-full h-full">
             <Navbar />
-            <div className="p-5">
-              <SectionHeader />
-              {children}
-            </div>
+            {children}
           </main>
         </SidebarProvider>
       </body>
