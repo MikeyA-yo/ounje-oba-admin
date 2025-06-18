@@ -83,6 +83,7 @@ a {
     @apply border-border;
   }
   body {
+    margin: 0 !important;
     @apply bg-background text-black;
   }
 }
