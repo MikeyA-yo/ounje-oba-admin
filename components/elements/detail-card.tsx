@@ -20,7 +20,7 @@ export const DetailCard = ({
     <div
       className={cn(
         "p-6 space-y-8 rounded-sm w-full md:w-auto md:flex-1",
-        children ? "h-48" : "h-40",
+        children ? "h-44" : "h-36",
       )}
       style={{ backgroundColor: bgColor }}
     >
