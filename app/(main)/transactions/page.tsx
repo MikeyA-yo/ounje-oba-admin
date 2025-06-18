@@ -1,4 +1,4 @@
-import { TransactionCards } from "@/components/transactions/cards";
+import { TransactionCards } from "@/components/cards/transactions";
 import TransactionHistoryTable from "@/components/transactions/transactions-table";
 
 export default function Transactions() {
