@@ -2,85 +2,51 @@
 
 import { data } from "@/data/routes";
 import { usePathname } from "next/navigation";
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "../ui/dialog";
 import { Icon } from "@iconify/react";
 import { Button } from "../ui/button";
-import { Checkbox } from "../ui/checkbox";
-import { Label } from "../ui/label";
+import { ExportDialog } from "../dialogs/export";
+import { AddProductDialog } from "../dialogs/add-product";
+import { AddCouponDialog } from "../dialogs/add-coupon";
 
 export const SectionHeader = () => {
   const route = usePathname();
-  const exports = [
-    "Summary",
-    "Top Selling Products",
-    "Top Customers",
-    "Revenue Trend",
-    "Orders Trend",
-    "Product Summary",
-    "Recent Orders",
-  ];
 
   return (
-    <div className="flex flex-row flex-nowrap justify-between items-center">
+    <div className="flex flex-col sm:flex-row flex-nowrap justify-between items-center gap-4">
       <h1 className="text-3xl font-bold self-baseline">
         {data.find((item) => item.url === route)?.name}
       </h1>
 
-      <Dialog>
-        <DialogTrigger asChild>
+      <div className="flex flex-row flex-nowrap gap-2 items-center w-full sm:w-auto">
+        {route === "/products" && (
+          <AddProductDialog>
+            <Button variant={"primary"} className="w-full">
+              <Icon icon="hugeicons:plus-sign" />
+              <span>Add Product</span>
+            </Button>
+          </AddProductDialog>
+        )}
+
+        {route === "/coupons" && (
+          <AddCouponDialog>
+            <Button variant={"primary"} className="w-full">
+              <Icon icon="hugeicons:plus-sign" />
+              <span>Add New Coupon</span>
+            </Button>
+          </AddCouponDialog>
+        )}
+
+        <ExportDialog>
           <Button
             variant={"outline"}
-            className="flex flex-row flex-nowrap items-center gap-2 font-medium border border-primary text-primary px-4 py-6 rounded-lg"
+            className="flex flex-row flex-nowrap items-center gap-2 w-full"
           >
             <Icon icon="hugeicons:download-04" />
-            Export
+            <span>Export</span>
             <Icon icon="hugeicons:arrow-down-01" />
           </Button>
-        </DialogTrigger>
-        <DialogContent>
-          <DialogHeader className="flex flex-row flex-nowrap items-center justify-between border-b border-border w-full py-2">
-            <DialogTitle>
-              <div className="text-xl">Export</div>
-            </DialogTitle>
-            <DialogDescription className="sr-only">
-              Export Dashboard
-            </DialogDescription>
-
-            <DialogClose asChild>
-              <Button variant={"ghost"} size={"icon"} className="">
-                <Icon
-                  icon="hugeicons:cancel-01"
-                  className="text-black text-xl"
-                />
-                <span className="sr-only">Close</span>
-              </Button>
-            </DialogClose>
-          </DialogHeader>
-          <div className="space-y-4">
-            {exports.map((exp, i) => (
-              <Label
-                key={i}
-                htmlFor={exp}
-                className="flex flex-row gap-3 font-normal items-center text-base"
-              >
-                <Checkbox id={exp} />
-                <span>{exp}</span>
-              </Label>
-            ))}
-          </div>
-          <Button disabled className="mt-8">
-            Export
-          </Button>
-        </DialogContent>
-      </Dialog>
+        </ExportDialog>
+      </div>
     </div>
   );
 };
