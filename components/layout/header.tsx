@@ -3,6 +3,8 @@ import { Button } from "../ui/button";
 import { Icon } from "@iconify/react";
 import { SidebarToggle } from "./sidebar-toggle";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
+import { UserPopover } from "../dialogs/user";
+import { Notifications } from "../dialogs/notifications";
 
 export const Navbar = () => {
   return (
@@ -21,8 +23,8 @@ export const Navbar = () => {
               <Icon icon="hugeicons:notification-01" className="text-black" />
             </Button>
           </PopoverTrigger>
-          <PopoverContent>
-            <h1>Notifications</h1>
+          <PopoverContent className="p-0 w-96">
+            <Notifications />
           </PopoverContent>
         </Popover>
 
@@ -44,61 +46,7 @@ export const Navbar = () => {
             </Button>
           </PopoverTrigger>
           <PopoverContent className="p-0 mr-4">
-            <div className="w-full">
-              {/* User Profile Header */}
-              <div className="bg-grey p-4 pb-4">
-                <div className="flex items-center gap-4">
-                  <div>
-                    <Avatar>
-                      <AvatarFallback className="bg-[#777] text-white">
-                        RE
-                      </AvatarFallback>
-                    </Avatar>
-                  </div>
-                  <div>
-                    <h3 className="text-lg font-semibold text-black">
-                      Ralph Edwards
-                    </h3>
-                    <p className="text-sm text-grey-900">Admin</p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Account Section */}
-              <div className="p-6 pt-4 border-b border-grey-200">
-                <h4 className="text-sm text-black-400 mb-4">Account</h4>
-
-                <div className="space-y-1">
-                  {/* Profile Menu Item */}
-                  <Button
-                    variant={"ghost"}
-                    className="w-full flex items-center gap-3 py-2 px-1 justify-start text-black"
-                  >
-                    <Icon icon="hugeicons:user" />
-                    <span className="font-medium">Profile</span>
-                  </Button>
-
-                  {/* Settings Menu Item */}
-                  <Button
-                    variant={"ghost"}
-                    className="w-full flex items-center gap-3 py-2 px-1 justify-start text-black"
-                  >
-                    <Icon icon="hugeicons:settings-01" />
-                    <span className="font-medium">Settings</span>
-                  </Button>
-                </div>
-              </div>
-
-              <div className="p-6 pt-4">
-                <Button
-                  variant={"ghost"}
-                  className="w-full flex items-center gap-3 py-2 px-1 justify-start text-error hover:text-error-200"
-                >
-                  <Icon icon="hugeicons:logout-02" />
-                  <span className="font-medium">Logout</span>
-                </Button>
-              </div>
-            </div>
+            <UserPopover />
           </PopoverContent>
         </Popover>
       </div>
