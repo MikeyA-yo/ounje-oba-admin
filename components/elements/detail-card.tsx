@@ -19,7 +19,7 @@ export const DetailCard = ({
   return (
     <div
       className={cn(
-        "p-6 space-y-8 rounded-sm w-full md:w-auto md:flex-1",
+        "p-6 space-y-8 rounded-lg w-full md:w-auto md:flex-1",
         children ? "h-44" : "h-36",
       )}
       style={{ backgroundColor: bgColor }}
@@ -28,7 +28,7 @@ export const DetailCard = ({
         <div className="bg-white rounded-md p-2">
           <Icon icon={icon} style={{ color: iconColor }} />
         </div>
-        <h2>{title}</h2>
+        <h2 className="text-nowrap">{title}</h2>
       </div>
       <div className="space-y-4">
         <p className="text-2xl font-semibold">{details}</p>
