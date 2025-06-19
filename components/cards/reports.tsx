@@ -15,9 +15,9 @@ export const ReportCards = () => {
         bgColor="#F6F2F7"
       >
         <div className="flex flex-row flex-nowrap justify-between text-sm">
-          <div className="text-black-500">
-            <p>+15.03%</p>
-            <Icon icon="hugeicons:trade-up" />
+          <div className="text-black-500 space-x-2">
+            <span>+15.03%</span>
+            <Icon className="inline" icon="hugeicons:trade-up" />
           </div>
           <p className="text-grey-800">Last 30 days</p>
         </div>
@@ -30,9 +30,9 @@ export const ReportCards = () => {
         bgColor="#FFF9E4"
       >
         <div className="flex flex-row flex-nowrap justify-between text-sm">
-          <div className="text-black-500">
-            <p>+15.03%</p>
-            <Icon icon="hugeicons:trade-up" />
+          <div className="text-black-500 space-x-2">
+            <span>+15.03%</span>
+            <Icon className="inline" icon="hugeicons:trade-up" />
           </div>
           <p className="text-grey-800">Last 30 days</p>
         </div>
@@ -45,9 +45,9 @@ export const ReportCards = () => {
         bgColor="#EBFDFF"
       >
         <div className="flex flex-row flex-nowrap justify-between text-sm">
-          <div className="text-black-500">
-            <p>+15.03%</p>
-            <Icon icon="hugeicons:trade-up" />
+          <div className="text-black-500 space-x-2">
+            <span>+15.03%</span>
+            <Icon className="inline" icon="hugeicons:trade-up" />
           </div>
           <p className="text-grey-800">Last 30 days</p>
         </div>
@@ -60,9 +60,9 @@ export const ReportCards = () => {
         bgColor="#F1F9F3"
       >
         <div className="flex flex-row flex-nowrap justify-between text-sm">
-          <div className="text-black-500">
-            <p>+15.03%</p>
-            <Icon icon="hugeicons:trade-up" />
+          <div className="text-black-500 space-x-2">
+            <span>+15.03%</span>
+            <Icon className="inline" icon="hugeicons:trade-up" />
           </div>
           <p className="text-grey-800">Last 30 days</p>
         </div>
