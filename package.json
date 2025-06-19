@@ -38,6 +38,7 @@
   },
   "devDependencies": {
     "@iconify/react": "^6.0.0",
+    "@tailwindcss/container-queries": "^0.1.1",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",

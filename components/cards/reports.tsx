@@ -6,7 +6,7 @@ import { Icon } from "@iconify/react";
 
 export const ReportCards = () => {
   return (
-    <div className="flex flex-col md:flex-row flex-wrap gap-4 items-center w-full">
+    <div className="flex flex-col @md/main:grid @md/main:grid-cols-2 @md/main:grid-flow-row @4xl/main:flex @4xl/main:flex-row @4xl/main:flex-wrap gap-4 items-center w-full">
       <DetailCard
         title="Total Revenue"
         details={poundSign + " 2,456"}
