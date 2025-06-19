@@ -25,7 +25,7 @@ export default function RootLayout({
       <body className={`${albert.className}`}>
         <SidebarProvider>
           <AppSidebar />
-          <main className="w-full h-full">
+          <main className="w-full h-full pb-12">
             <Navbar />
             {children}
           </main>
