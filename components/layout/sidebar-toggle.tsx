@@ -7,11 +7,7 @@ export const SidebarToggle = () => {
   const { toggleSidebar } = useSidebar();
 
   return (
-    <Button
-      onClick={toggleSidebar}
-      className="bg-grey shadow-none"
-      size={"icon"}
-    >
+    <Button variant={"ghost"} onClick={toggleSidebar} className="bg-grey">
       <Icon icon="hugeicons:sidebar-left" className="text-black" />
     </Button>
   );

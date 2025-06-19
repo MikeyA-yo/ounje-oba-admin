@@ -14,12 +14,19 @@ import { usePathname } from "next/navigation";
 import { data } from "@/data/routes";
 
 export function AppSidebar() {
-  const route = usePathname();
+  const pathname = usePathname();
 
+  function isActive(url: string) {
+    if (url === "/") {
+      return pathname === "/";
+    } else if (url !== "/") {
+      return pathname.startsWith(url);
+    }
+  }
   return (
     <Sidebar>
       <SidebarHeader className="border-b border-border py-5 h-24">
-        <div className="mx-auto">
+        <div className="mx-auto" lang="yr">
           <Image src="/logo.png" alt="Ounje Oba logo" width={50} height={50} />
         </div>
       </SidebarHeader>
@@ -30,7 +37,7 @@ export function AppSidebar() {
               key={item.name}
               className={cn(
                 "flex flex-row items-center gap-4 text-black-500 p-4 rounded-lg",
-                route === item.url && "bg-primary text-white",
+                isActive(item.url) && "bg-primary text-white",
               )}
             >
               <Icon icon={item.icon} />
