@@ -1,10 +1,7 @@
 import type { Metadata } from "next";
 import { Albert_Sans } from "next/font/google";
 import "./globals.css";
-import { Navbar } from "@/components/layout/header";
-import { SidebarProvider } from "@/components/ui/sidebar";
-import { AppSidebar } from "@/components/layout/sidebar";
-import { SectionHeader } from "@/components/layout/section-header";
+import QueryProvider from "@/providers/query-provider";
 
 const albert = Albert_Sans({
   subsets: ["latin"],
@@ -23,13 +20,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${albert.className}`}>
-        <SidebarProvider>
-          <AppSidebar />
-          <main className="@container/main w-full h-full pb-12">
-            <Navbar />
-            {children}
-          </main>
-        </SidebarProvider>
+        <QueryProvider>
+          <main>{children}</main>
+        </QueryProvider>
       </body>
     </html>
   );

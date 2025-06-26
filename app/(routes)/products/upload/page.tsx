@@ -1,5 +1,5 @@
 import { Icon } from "@iconify/react";
-import { SingleProductForm } from "@/components/forms/single-product-form";
+import SingleProductForm from "@/components/forms/single-product-form";
 import Link from "next/link";
 
 export default function SingleProductUpload() {
