@@ -1,6 +1,18 @@
 import { Button } from "../ui/button";
 import { Icon } from "@iconify/react";
 import { Avatar, AvatarFallback } from "../ui/avatar";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "../ui/alert-dialog";
+import { useAuthStore } from "@/store/auth-store";
 
 export const UserPopover = () => {
   return (
@@ -48,14 +60,41 @@ export const UserPopover = () => {
       </div>
 
       <div className="p-6 pt-4">
-        <Button
-          variant={"ghost"}
-          className="w-full flex items-center gap-3 py-2 px-1 justify-start text-error hover:text-error-200"
-        >
-          <Icon icon="hugeicons:logout-02" />
-          <span className="font-medium">Logout</span>
-        </Button>
+        <LogoutDialog>
+          <Button
+            variant={"ghost"}
+            className="w-full flex items-center gap-3 py-2 px-1 justify-start text-error hover:text-error-200"
+          >
+            <Icon icon="hugeicons:logout-02" />
+            <span className="font-medium">Logout</span>
+          </Button>
+        </LogoutDialog>
       </div>
     </div>
   );
 };
+
+function LogoutDialog({ children }: { children: React.ReactNode }) {
+  const logout = useAuthStore((state) => state.logout);
+  return (
+    <AlertDialog>
+      <AlertDialogTrigger className="w-full" asChild>
+        {children}
+      </AlertDialogTrigger>
+      <AlertDialogContent className="sm:max-w-md">
+        <AlertDialogHeader className="text-center space-y-3">
+          <AlertDialogTitle className="text-xl font-semibold text-grey-900">
+            Are you Logging out?
+          </AlertDialogTitle>
+          <AlertDialogDescription className="text-grey-600">
+            You can always log back at any time.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter className="flex gap-3 mt-6">
+          <AlertDialogCancel>Cancel</AlertDialogCancel>
+          <AlertDialogAction onClick={logout}>Log Out</AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+  );
+}

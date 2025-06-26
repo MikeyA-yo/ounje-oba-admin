@@ -58,7 +58,7 @@ export const Notifications = () => {
     <div className="w-full max-h-[80vh] overflow-y-auto">
       {/* Header */}
       <div className="flex items-center justify-between border-b border-grey-200">
-        <h1 className="text-xl font-medium text-gray-900 p-6">Notifications</h1>
+        <h1 className="text-xl font-medium text-grey-900 p-6">Notifications</h1>
       </div>
 
       {/* Notifications List */}

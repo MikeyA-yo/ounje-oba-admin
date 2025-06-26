@@ -53,7 +53,7 @@ export const AddProductDialog = ({
                 <Button
                   variant={"outline"}
                   key={index}
-                  className="flex flex-col gap-4 text-primary bg-[#F8F5F9] border-primary-100 font-semibold sm:px-10 sm:py-16 md:px-20 md:py-32 rounded-2xl"
+                  className="flex flex-col gap-4 text-primary bg-[#F8F5F9] border-primary-100 font-semibold py-12 sm:px-10 sm:py-16 md:px-20 md:py-32 rounded-2xl"
                   onClick={() => handlePageChange(index)}
                 >
                   {index === 0 ? (

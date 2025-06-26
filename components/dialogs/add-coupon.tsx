@@ -1,3 +1,4 @@
+import AddNewCouponForm from "../forms/new-coupon-form";
 import {
   Dialog,
   DialogContent,
@@ -18,6 +19,8 @@ export const AddCouponDialog = ({
         <DialogHeader>
           <DialogTitle>Add Coupon</DialogTitle>
         </DialogHeader>
+
+        <AddNewCouponForm />
       </DialogContent>
     </Dialog>
   );
