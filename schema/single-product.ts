@@ -22,7 +22,20 @@ export const singleProductSchema = z
     variation: z.enum(["yes", "no"], { error: "This field is required" }),
     loyalty: z.enum(["yes", "no"], { error: "This field is required" }),
   })
-  .refine((data) => Number(data.lowStock) <= Number(data.stockQty), {
-    error: "Low stock alert cannot be greater than stock quantity",
+  .refine((data) => Number(data.stockQty) > Number(data.lowStock), {
+    message: "Stock Quantity must be greater than Low Stock Alert",
     path: ["lowStock"],
   });
+
+export const variationSchema = z.object({
+  variations: z
+    .array(
+      z.object({
+        variationType: z.string().min(1, "Type is required"),
+        variationValues: z
+          .array(z.string().min(1, "Value is required"))
+          .min(1, "At least one value is required"),
+      }),
+    )
+    .min(1, "At least one variation is required"),
+});

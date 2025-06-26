@@ -12,6 +12,6 @@ export const NewCouponSchema = z.object({
   usageLimit: z
     .string()
     .regex(/^[1-9]\d*$/, "Usage Limit must be a positive number"),
-  endData: z.date().min(1, "End Date is required"),
+  endDate: z.date({ error: "Invalid Date" }).min(1, "End Date is required"),
   category: z.string().min(1, "Category is required"),
 });

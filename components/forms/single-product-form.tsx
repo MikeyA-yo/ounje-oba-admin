@@ -26,12 +26,9 @@ import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
 import { Button } from "../ui/button";
 import { useRef, useState } from "react";
 import { Icon } from "@iconify/react";
+import AddVariationForm from "./add-variation-form";
 
-export const SingleProductForm = () => {
-  const [images, setImages] = useState<FileList>();
-  const [imagePreviews, setImagePreviews] = useState<string[]>([]);
-  const fileInputRef = useRef<HTMLInputElement | null>(null);
-
+export default function SingleProductForm() {
   const form = useForm<z.infer<typeof singleProductSchema>>({
     resolver: zodResolver(singleProductSchema),
     mode: "onChange",
@@ -47,9 +44,17 @@ export const SingleProductForm = () => {
     },
   });
 
+  const [images, setImages] = useState<FileList>();
+  const [imagePreviews, setImagePreviews] = useState<string[]>([]);
+  const [showVariationForm, setShowVariationForm] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const showAddVariationBtn = form.watch("variation") === "yes";
+
   function handleImageUpload(files: FileList) {}
 
-  function onSubmit() {}
+  function onSubmit() {
+    console.log(form.getValues());
+  }
 
   return (
     <Form {...form}>
@@ -281,6 +286,18 @@ export const SingleProductForm = () => {
                 )}
               />
 
+              {showAddVariationBtn && (
+                <Button
+                  type="button"
+                  variant="ghost"
+                  className="flex items-center gap-2"
+                  onClick={() => setShowVariationForm(true)}
+                >
+                  Add Variation
+                  <Icon icon="hugeicons:add-01" />
+                </Button>
+              )}
+
               <FormField
                 name="loyalty"
                 control={form.control}
@@ -329,6 +346,11 @@ export const SingleProductForm = () => {
           Add Product
         </Button>
       </form>
+
+      <AddVariationForm
+        openForm={showVariationForm}
+        onOpenForm={setShowVariationForm}
+      />
     </Form>
   );
-};
+}
