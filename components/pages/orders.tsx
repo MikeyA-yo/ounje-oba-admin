@@ -19,7 +19,7 @@ export default function OrdersClient() {
   return (
     <div className="space-y-6">
       <OrderCards />
-      <OrdersTable />
+      {/* <OrdersTable /> */}
     </div>
   );
 }

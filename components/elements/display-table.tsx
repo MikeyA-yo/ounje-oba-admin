@@ -1,6 +1,25 @@
-import { RefreshCw, Filter, Search } from "lucide-react";
+"use client";
+
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
+import {
+  ColumnDef,
+  flexRender,
+  getCoreRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  PaginationState,
+  SortingState,
+  useReactTable,
+} from "@tanstack/react-table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import {
   Select,
   SelectContent,
@@ -9,18 +28,56 @@ import {
   SelectValue,
 } from "../ui/select";
 import { Icon } from "@iconify/react";
+import { useMemo, useState } from "react";
 
-export const DisplayTable = ({
+export default function DisplayTable<TData, TValue>({
   title,
+  columns,
+  data,
+  rowCount,
   showSortBy = true,
   showSearch = true,
-  children,
+  sortOptions = [],
+  refresh,
 }: {
   title: string;
+  columns: ColumnDef<TData, TValue>[];
+  data: TData[];
+  rowCount: number;
   showSortBy?: boolean;
   showSearch?: boolean;
-  children: React.ReactNode;
-}) => {
+  sortOptions?: { key: keyof TData; value: string }[];
+  refresh: () => Promise<void>;
+}) {
+  const [sortValue, setSortValue] = useState("");
+  const [pagination, setPagination] = useState<PaginationState>({
+    pageIndex: 0,
+    pageSize: 10,
+  });
+
+  const table = useReactTable({
+    data,
+    columns,
+    rowCount,
+    getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    onPaginationChange: setPagination,
+    manualPagination: true,
+    state: {
+      pagination,
+    },
+  });
+
+  const getLastIndex = () =>
+    useMemo(() => {
+      const rowCount = table.getRowCount();
+
+      return pagination.pageSize * (pagination.pageIndex + 1) < rowCount
+        ? pagination.pageSize * (pagination.pageIndex + 1)
+        : rowCount;
+    }, [pagination.pageIndex, pagination.pageSize]);
+
   return (
     <div className="w-full max-w-7xl mx-auto border border-grey-200 rounded-md">
       <div className="flex flex-col md:flex-row items-center justify-between px-4 py-6 gap-y-4">
@@ -47,6 +104,7 @@ export const DisplayTable = ({
             variant="outline"
             size={"md"}
             className="border-[#8D8D8D] text-black"
+            onClick={async () => await refresh()}
           >
             <Icon icon="hugeicons:arrow-reload-horizontal" />
           </Button>
@@ -61,15 +119,25 @@ export const DisplayTable = ({
           </Button>
 
           {showSortBy && (
-            <Select defaultValue="sort-by">
-              <SelectTrigger className="w-32 border-[#8D8D8D]">
+            <Select
+              value={sortValue}
+              onValueChange={(val) => {
+                setSortValue(val);
+
+                if (val !== "") {
+                  table.setSorting(() => [{ id: val, desc: false }]);
+                }
+              }}
+            >
+              <SelectTrigger className="w-36 border-[#8D8D8D]">
                 <SelectValue placeholder="Sort By" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="sort-by">Sort By</SelectItem>
-                <SelectItem value="date">Date</SelectItem>
-                <SelectItem value="amount">Amount</SelectItem>
-                <SelectItem value="status">Status</SelectItem>
+                {sortOptions.map((option, index) => (
+                  <SelectItem key={index} value={option.key as string}>
+                    {option.value}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           )}
@@ -88,12 +156,132 @@ export const DisplayTable = ({
               />
             </div>
           )}
+
+          <Button
+            type="reset"
+            variant="outline"
+            size="md"
+            onClick={() => {
+              if (sortValue) {
+                setSortValue("");
+                table.resetSorting();
+              }
+            }}
+          >
+            Clear
+          </Button>
         </div>
       </div>
 
-      <div className="[&_.table-header]:bg-grey [&_.table-header]:text-black-500 [&_.table-body-row]:border-none [&_.table-body-row:hover]:bg-grey-100 [&_.table-footer]:mt-2 [&_.table-footer]:text-black [&_.table-footer]:bg-[#F7F7F7] [&_.table-footer]:border-t [&_.table-footer]:border-[#E0E0E0]">
-        {children}
+      <div className="">
+        <Table>
+          <TableHeader className="bg-grey text-black-500">
+            {table.getHeaderGroups().map((headerGroup) => (
+              <TableRow key={headerGroup.id}>
+                {headerGroup.headers.map((header) => (
+                  <TableHead key={header.id}>
+                    {flexRender(
+                      header.column.columnDef.header,
+                      header.getContext(),
+                    )}
+                  </TableHead>
+                ))}
+              </TableRow>
+            ))}
+          </TableHeader>
+          <TableBody>
+            {table.getRowModel().rows.length ? (
+              table.getRowModel().rows.map((row) => (
+                <TableRow
+                  key={row.id}
+                  className="border-none hover:bg-grey-100 [&_td]:py-6"
+                >
+                  {row.getVisibleCells().map((cell) => (
+                    <TableCell key={cell.id}>
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext(),
+                      )}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell
+                  colSpan={columns.length}
+                  className="h-24 text-center"
+                >
+                  No results.
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </div>
+
+      <div className="mt-2 text-black bg-[#F7F7F7] border-t border-[#E0E0E0] flex items-center justify-between">
+        <div className="flex items-center gap-2 px-4 py-1 border-r border-[#E0E0E0]">
+          <span className="text-sm">Items per page:</span>
+          <Select
+            value={pagination.pageSize.toString()}
+            onValueChange={(val) => {
+              const newSize = Number.parseInt(val);
+              const [whole, frac] = (rowCount / newSize)
+                .toFixed(1)
+                .split(".")
+                .map((n) => Number.parseInt(n));
+              console.log(whole, frac);
+              const newIndex = frac > 0 ? whole + 1 - 1 : whole - 1;
+
+              setPagination({ pageIndex: newIndex, pageSize: newSize });
+            }}
+          >
+            <SelectTrigger className="w-fit h-8 border-none">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="10">10</SelectItem>
+              <SelectItem value="25">25</SelectItem>
+              <SelectItem value="50">50</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="flex-1 px-4">
+          <span className="text-sm">
+            {pagination.pageIndex * pagination.pageSize + 1} – {getLastIndex()}{" "}
+            of {table.getRowCount()} items
+          </span>
+        </div>
+
+        <div className="flex items-center gap-4 py-1 border-l border-[#E0E0E0] pl-4">
+          <div className="flex items-center gap-2">
+            <span className="text-sm">
+              Page {pagination.pageIndex + 1} of {table.getPageCount()} pages
+            </span>
+
+            <div className="">
+              <Button
+                variant="ghost"
+                className="text-black h-8 w-8 border-l rounded-none border-[#e0e0e0]"
+                disabled={!table.getCanPreviousPage()}
+                onClick={() => table.previousPage()}
+              >
+                <Icon icon="hugeicons:arrow-left-01" />
+              </Button>
+              <Button
+                variant="ghost"
+                className="text-black h-8 w-8 border-l rounded-none border-[#e0e0e0]"
+                disabled={!table.getCanNextPage()}
+                onClick={() => table.nextPage()}
+              >
+                <Icon icon="hugeicons:arrow-right-01" />
+              </Button>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
-};
+}

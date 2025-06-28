@@ -11,7 +11,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { DisplayTable } from "../elements/display-table";
 import { products } from "@/data/products";
 import { poundSign } from "@/lib/utils";
 import { Icon } from "@iconify/react";
@@ -72,7 +71,7 @@ export default function ProductsTable() {
   };
 
   return (
-    <DisplayTable title="" showSearch={false}>
+    <div>
       <Table>
         <TableHeader className="table-header">
           <TableRow>
@@ -198,6 +197,6 @@ export default function ProductsTable() {
           </div>
         </div>
       </div>
-    </DisplayTable>
+    </div>
   );
 }

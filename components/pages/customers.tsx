@@ -18,7 +18,7 @@ export default function CustomerClient() {
   return (
     <div className="space-y-6">
       <CustomerCards />
-      <CustomersTable />
+      {/* <CustomersTable /> */}
     </div>
   );
 }

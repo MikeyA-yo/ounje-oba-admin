@@ -19,8 +19,8 @@ export default function ReportsClient() {
   return (
     <div className="space-y-6">
       <ReportCards />
-      <TopSellingProducts />
-      <ProductsSummaryTable />
+      {/* <TopSellingProducts /> */}
+      {/* <ProductsSummaryTable /> */}
     </div>
   );
 }

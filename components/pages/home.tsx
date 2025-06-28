@@ -20,10 +20,8 @@ export default function HomeClient() {
   return (
     <div className="space-y-6">
       <HomeCards />
-      <div>
-        <TopSellingProductsTable />
-      </div>
-      <ProductsSummaryTable />
+      <div>{/* <TopSellingProductsTable /> */}</div>
+      {/* <ProductsSummaryTable /> */}
     </div>
   );
 }

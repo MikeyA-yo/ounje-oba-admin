@@ -18,7 +18,7 @@ export default function TransactionsClient() {
   return (
     <div className="space-y-6">
       <TransactionCards />
-      <TransactionHistoryTable />
+      {/* <TransactionHistoryTable /> */}
     </div>
   );
 }

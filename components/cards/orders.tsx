@@ -1,8 +1,20 @@
 "use client";
 
+import { useQuery } from "@tanstack/react-query";
 import { DetailCard } from "../elements/detail-card";
+import api from "@/lib/api";
+import { orderManagement } from "@/lib/routes";
 
 export const OrderCards = () => {
+  const {} = useQuery({
+    queryKey: ["order-management"],
+    queryFn: async () => {
+      const response = await api.get(orderManagement);
+      console.log(response.data);
+
+      return response.data;
+    },
+  });
   return (
     <div className="flex flex-col @md/main:grid @md/main:grid-cols-2 @md/main:grid-flow-row @4xl/main:flex @4xl/main:flex-row @4xl/main:flex-wrap gap-4 items-center w-full">
       <DetailCard

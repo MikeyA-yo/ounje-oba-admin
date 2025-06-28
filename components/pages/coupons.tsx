@@ -20,7 +20,7 @@ export default function CouponClient() {
   return (
     <div className="space-y-6">
       <CouponCards />
-      <CouponTable />
+      {/* <CouponTable /> */}
       <CouponPerformanceChart />
     </div>
   );
