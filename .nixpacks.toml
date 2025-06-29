@@ -9,3 +9,6 @@ cmds = ["bun run build"]
 
 [start]
 cmd = "bun run start"
+
+[variables]
+NIXPACKS_PRUNE_LOCKFILES = "true"
