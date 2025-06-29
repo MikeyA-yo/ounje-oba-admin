@@ -1,0 +1,14 @@
+[phases.setup]
+nixpkgs = ["bun", "nodejs_18"]
+
+[phases.install]
+cmds = ["bun install"]
+
+[phases.build]
+cmds = ["bun run build"]
+
+[start]
+cmd = "bun run start"
+
+[variables]
+NIXPACKS_PRUNE_LOCKFILES = "true"
