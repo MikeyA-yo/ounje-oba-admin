@@ -1,3 +1,6 @@
+[phases.setup]
+nixpkgs = ["bun", "nodejs_18"]
+
 [phases.install]
 cmds = ["bun install"]
 
