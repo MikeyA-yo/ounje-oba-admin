@@ -2,7 +2,7 @@
 nixpkgs = ["bun", "nodejs_18"]
 
 [phases.install]
-cmds = ["bun install"]
+cmds = ["bun i --no-save"]
 
 [phases.build]
 cmds = ["bun run build"]
