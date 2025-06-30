@@ -19,7 +19,6 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { transactions } from "@/data/transactions";
-import DisplayTable from "../elements/display-table";
 import { Icon } from "@iconify/react";
 
 const getStatusBadge = (status: string) => {
@@ -50,13 +49,13 @@ const getStatusBadge = (status: string) => {
 export default function TransactionHistoryTable() {
   const [itemsPerPage, setItemsPerPage] = useState("10");
   const [pages, setPages] = useState(1);
-
+  const [currentPage, setCurrentPage] = useState(1);  
   useEffect(() => {
     setPages(Math.ceil(transactions.length / Number.parseInt(itemsPerPage)));
   }, [itemsPerPage]);
 
   return (
-    <DisplayTable title="Transaction History" columns={[]} data={[]} rowCount={0} refresh={() => Promise.resolve()}>
+    <div>
       {/* Table */}
       <div className="overflow-hidden">
         <Table className="text-black">
@@ -117,13 +116,13 @@ export default function TransactionHistoryTable() {
         </div>
 
         <div className="flex-1 px-4">
-          <span className="text-sm">1 – {itemsPerPage} of {transactions.length} items</span>
+            <span className="text-sm">1 – {itemsPerPage} of {transactions.length} items</span>
         </div>
 
         <div className="flex items-center gap-4 py-1 border-l border-[#E0E0E0] pl-4">
           <div className="flex items-center gap-2">
             <Select
-              value="1"
+              value={currentPage.toString()}
               onValueChange={(value) => setCurrentPage(Number.parseInt(value))}
             >
               <SelectTrigger className="w-fit h-8 border-none">
@@ -156,6 +155,6 @@ export default function TransactionHistoryTable() {
           </div>
         </div>
       </div>
-    </DisplayTable>
+    </div>
   );
 }

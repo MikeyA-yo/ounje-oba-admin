@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -11,7 +11,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { DisplayTable } from "../elements/display-table";
 import { customers } from "@/data/customers";
 import { poundSign } from "@/lib/utils";
 import { Icon } from "@iconify/react";
@@ -38,6 +37,12 @@ function getStatusColor(status: string) {
 export default function CustomersTable() {
   const [itemsPerPage, setItemsPerPage] = useState("10");
   const [selectedProducts, setSelectedProducts] = useState<number[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pages, setPages] = useState(1);
+
+  useEffect(() => {
+    setPages(Math.ceil(customers.length / Number.parseInt(itemsPerPage)));
+  }, [itemsPerPage]);
 
   const handleSelectAll = (checked: boolean) => {
     if (checked) {
@@ -56,7 +61,7 @@ export default function CustomersTable() {
   };
 
   return (
-    <DisplayTable title="" showSearch={false}>
+    <div>
       <Table>
         <TableHeader className="table-header">
           <TableRow>
@@ -130,25 +135,29 @@ export default function CustomersTable() {
         </div>
 
         <div className="flex-1 px-4">
-          <span className="text-sm">1 – 100 of 1,228 items</span>
+          <span className="text-sm">
+            1 – {itemsPerPage} of {customers.length} items
+          </span>
         </div>
 
         <div className="flex items-center gap-4 py-1 border-l border-[#E0E0E0] pl-4">
           <div className="flex items-center gap-2">
             <Select
-              value="1"
+              value={currentPage.toString()}
               onValueChange={(value) => setCurrentPage(Number.parseInt(value))}
             >
               <SelectTrigger className="w-fit h-8 border-none">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="1">1</SelectItem>
-                <SelectItem value="2">2</SelectItem>
-                <SelectItem value="3">3</SelectItem>
+                {Array.from({ length: pages }, (_, index) => (
+                  <SelectItem key={index} value={index.toString()}>
+                    {index + 1}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
-            <span className="text-sm">of 13 pages</span>
+              <span className="text-sm">of {pages} pages</span>
 
             <div className="">
               <Button
@@ -167,6 +176,6 @@ export default function CustomersTable() {
           </div>
         </div>
       </div>
-    </DisplayTable>
+    </div>
   );
 }

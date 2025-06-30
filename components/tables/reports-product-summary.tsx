@@ -9,7 +9,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import DisplayTable from "../elements/display-table";
 import { Icon } from "@iconify/react";
 import { productSummary } from "@/data/products-summary";
 import { poundSign } from "@/lib/utils";
@@ -20,12 +19,18 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function ProductsSummaryTable() {
   const [itemsPerPage, setItemsPerPage] = useState("10");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pages, setPages] = useState(1);
+
+  useEffect(() => {
+    setPages(Math.ceil(productSummary.length / Number.parseInt(itemsPerPage)));
+  }, [itemsPerPage]);
   return (
-    <DisplayTable title="Products Summary">
+    <div>
       {/* Table */}
       <div className="overflow-hidden">
         <Table className="text-black">
@@ -79,25 +84,27 @@ export default function ProductsSummaryTable() {
         </div>
 
         <div className="flex-1 px-4">
-          <span className="text-sm">1 – 100 of 1,228 items</span>
+          <span className="text-sm">1 – {itemsPerPage} of {productSummary.length} items</span>
         </div>
 
         <div className="flex items-center gap-4 py-1 border-l border-[#E0E0E0] pl-4">
           <div className="flex items-center gap-2">
             <Select
-              value="1"
+                value={currentPage.toString()}
               onValueChange={(value) => setCurrentPage(Number.parseInt(value))}
             >
               <SelectTrigger className="w-fit h-8 border-none">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="1">1</SelectItem>
-                <SelectItem value="2">2</SelectItem>
-                <SelectItem value="3">3</SelectItem>
+                {Array.from({ length: pages }, (_, index) => (
+                  <SelectItem key={index} value={index.toString()}>
+                    {index + 1}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
-            <span className="text-sm">of 13 pages</span>
+            <span className="text-sm">of {pages} pages</span>
 
             <div className="">
               <Button
@@ -116,6 +123,6 @@ export default function ProductsSummaryTable() {
           </div>
         </div>
       </div>
-    </DisplayTable>
+    </div>
   );
 }

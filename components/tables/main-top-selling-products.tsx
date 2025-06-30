@@ -11,7 +11,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { DisplayTable } from "../elements/display-table";
 import { dashboardProducts as products } from "@/data/top-selling";
 import { poundSign } from "@/lib/utils";
 
@@ -55,7 +54,7 @@ export default function TopSellingProductsTable() {
   );
 
   return (
-    <DisplayTable title="Top Selling Products" showSortBy={false}>
+    <div>
       <Table>
         <TableHeader className="table-header">
           <TableRow>
@@ -107,6 +106,6 @@ export default function TopSellingProductsTable() {
           ))}
         </TableBody>
       </Table>
-    </DisplayTable>
+    </div>
   );
 }

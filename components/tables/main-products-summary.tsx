@@ -8,13 +8,12 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { DisplayTable } from "../elements/display-table";
 import { productSummary } from "@/data/products-summary";
 import { poundSign } from "@/lib/utils";
 
 export default function ProductsSummaryTable() {
   return (
-    <DisplayTable title="Products Summary" showSortBy={false}>
+    <div>
       {/* Table */}
       <div className="overflow-hidden">
         <Table className="text-black">
@@ -47,6 +46,6 @@ export default function ProductsSummaryTable() {
           </TableBody>
         </Table>
       </div>
-    </DisplayTable>
+    </div>
   );
 }
