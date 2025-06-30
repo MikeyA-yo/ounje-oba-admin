@@ -1,6 +1,5 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
 import {
   Table,
   TableBody,
@@ -10,7 +9,6 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { DisplayTable } from "../elements/display-table";
-import { Icon } from "@iconify/react";
 import { productSummary } from "@/data/products-summary";
 import { poundSign } from "@/lib/utils";
 

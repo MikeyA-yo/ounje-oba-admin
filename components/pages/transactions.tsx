@@ -2,11 +2,10 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { TransactionCards } from "../cards/transactions";
-import TransactionHistoryTable from "../tables/transactions-table";
 import api from "@/lib/api";
 
 export default function TransactionsClient() {
-  const {} = useQuery({
+  const { } = useQuery({
     queryKey: ["transactions"],
     queryFn: async () => {
       const response = await api.get("");

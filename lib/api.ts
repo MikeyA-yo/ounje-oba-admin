@@ -16,7 +16,7 @@ const api = axios.create({
 });
 
 api.interceptors.request.use((config) => {
-  let accessToken = useAuthStore.getState().accessToken;
+  const { accessToken } = useAuthStore.getState();
 
   if (isBrowser) {
     if (accessToken) {

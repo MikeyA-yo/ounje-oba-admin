@@ -2,11 +2,10 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { CustomerCards } from "../cards/customers";
-import CustomersTable from "../tables/customers";
 import api from "@/lib/api";
 
 export default function CustomerClient() {
-  const {} = useQuery({
+  const { } = useQuery({
     queryKey: ["customers"],
     queryFn: async () => {
       const response = await api.get("");

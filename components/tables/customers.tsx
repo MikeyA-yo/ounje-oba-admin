@@ -36,11 +36,8 @@ function getStatusColor(status: string) {
 }
 
 export default function CustomersTable() {
-  const [searchTerm, setSearchTerm] = useState("");
   const [itemsPerPage, setItemsPerPage] = useState("10");
-  const [currentPage, setCurrentPage] = useState(1);
   const [selectedProducts, setSelectedProducts] = useState<number[]>([]);
-  const [searchQuery, setSearchQuery] = useState("");
 
   const handleSelectAll = (checked: boolean) => {
     if (checked) {

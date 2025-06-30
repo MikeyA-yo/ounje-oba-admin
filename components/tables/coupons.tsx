@@ -18,9 +18,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { ChevronRight } from "lucide-react";
-import { transactions } from "@/data/transactions";
-import { DisplayTable } from "../elements/display-table";
+import DisplayTable from "../elements/display-table";
 import { Icon } from "@iconify/react";
 import { coupons } from "@/data/coupons";
 import { poundSign } from "@/lib/utils";
@@ -51,9 +49,7 @@ const getStatusBadge = (status: string) => {
 };
 
 export default function CouponTable() {
-  const [searchTerm, setSearchTerm] = useState("");
   const [itemsPerPage, setItemsPerPage] = useState("10");
-  const [currentPage, setCurrentPage] = useState(1);
 
   return (
     <DisplayTable title="Coupons">

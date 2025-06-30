@@ -1,8 +1,17 @@
 "use client";
 
 import { DetailCard } from "../elements/detail-card";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export const ProductsCards = ({ loading }: { loading: boolean }) => {
+  // add a loading state
+  if (loading) {
+    return (
+      <div className="flex flex-col @md/main:grid @md/main:grid-cols-2 @md/main:grid-flow-row @4xl/main:flex @4xl/main:flex-row @4xl/main:flex-wrap gap-4 items-center w-full">
+        <Skeleton className="h-10 w-full" />
+      </div>
+    );
+  }
   return (
     <div className="flex flex-col @md/main:grid @md/main:grid-cols-2 @md/main:grid-flow-row @4xl/main:flex @4xl/main:flex-row @4xl/main:flex-wrap gap-4 items-center w-full">
       <DetailCard

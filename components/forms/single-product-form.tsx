@@ -44,13 +44,9 @@ export default function SingleProductForm() {
     },
   });
 
-  const [images, setImages] = useState<FileList>();
-  const [imagePreviews, setImagePreviews] = useState<string[]>([]);
   const [showVariationForm, setShowVariationForm] = useState(false);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const showAddVariationBtn = form.watch("variation") === "yes";
-
-  function handleImageUpload(files: FileList) {}
 
   function onSubmit() {
     console.log(form.getValues());
@@ -196,7 +192,7 @@ export default function SingleProductForm() {
               <FormField
                 name="images"
                 control={form.control}
-                render={({ field }) => (
+                render={() => (
                   <FormItem>
                     <FormLabel>Add Image</FormLabel>
                     <FormDescription>
@@ -215,10 +211,8 @@ export default function SingleProductForm() {
                           type="file"
                           accept="image/*"
                           multiple={true}
-                          onChange={(e) => {
-                            if (e.target.files && e.target.files.length > 0) {
-                              setImages(e.target.files);
-                            }
+                          onChange={() => {
+                            // File handling logic would go here
                           }}
                           className="w-0 h-0"
                         />

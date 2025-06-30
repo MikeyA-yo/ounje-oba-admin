@@ -31,7 +31,7 @@ export default function LoginForm() {
     if (isAuthenticated) {
       router.push("/");
     }
-  }, [isAuthenticated]);
+  }, [isAuthenticated, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -87,7 +87,7 @@ export default function LoginForm() {
               {isLoading ? "Signing in..." : "Sign In"}
             </Button>
             <p className="text-sm text-center text-grey-600">
-              Don't have an account?{" "}
+              Don&apos;t have an account?{" "}
               <Link
                 href="/signup"
                 className="text-blue-600 hover:underline font-medium"

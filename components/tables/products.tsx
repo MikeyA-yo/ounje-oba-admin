@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -49,10 +49,9 @@ function getVisibilityColor(status: string) {
 
 export default function ProductsTable() {
   const [selectedProducts, setSelectedProducts] = useState<number[]>([]);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [searchTerm, setSearchTerm] = useState("");
   const [itemsPerPage, setItemsPerPage] = useState("10");
   const [currentPage, setCurrentPage] = useState(1);
+  const [pages, setPages] = useState(1);
 
   const handleSelectAll = (checked: boolean) => {
     if (checked) {
@@ -69,6 +68,10 @@ export default function ProductsTable() {
       setSelectedProducts(selectedProducts.filter((id) => id !== productId));
     }
   };
+
+  useEffect(() => {
+    setPages(Math.ceil(products.length / Number.parseInt(itemsPerPage)));
+  }, [itemsPerPage]);
 
   return (
     <div>
@@ -160,25 +163,27 @@ export default function ProductsTable() {
         </div>
 
         <div className="flex-1 px-4">
-          <span className="text-sm">1 – 100 of 1,228 items</span>
+          <span className="text-sm">1 – {itemsPerPage} of {products.length} items</span>
         </div>
 
         <div className="flex items-center gap-4 py-1 border-l border-[#E0E0E0] pl-4">
           <div className="flex items-center gap-2">
             <Select
-              value="1"
+              value={currentPage.toString()}
               onValueChange={(value) => setCurrentPage(Number.parseInt(value))}
             >
               <SelectTrigger className="w-fit h-8 border-none">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="1">1</SelectItem>
-                <SelectItem value="2">2</SelectItem>
-                <SelectItem value="3">3</SelectItem>
+                {Array.from({ length: pages }, (_, index) => (
+                  <SelectItem key={index} value={index.toString()}>
+                    {index + 1}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
-            <span className="text-sm">of 13 pages</span>
+            <span className="text-sm">of {pages} pages</span>
 
             <div className="">
               <Button

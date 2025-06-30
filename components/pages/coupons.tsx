@@ -3,12 +3,11 @@
 import { useQuery } from "@tanstack/react-query";
 import { CouponCards } from "../cards/coupons";
 import CouponPerformanceChart from "../charts/coupon-performance";
-import CouponTable from "../tables/coupons";
 import api from "@/lib/api";
 import { coupons } from "@/lib/routes";
 
 export default function CouponClient() {
-  const {} = useQuery({
+  const { } = useQuery({
     queryKey: ["coupons"],
     queryFn: async () => {
       const response = await api.get(coupons);

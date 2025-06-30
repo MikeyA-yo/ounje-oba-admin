@@ -18,7 +18,6 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { ChevronRight } from "lucide-react";
 import { orders } from "@/data/orders";
 import { DisplayTable } from "../elements/display-table";
 import { Icon } from "@iconify/react";
@@ -81,9 +80,7 @@ const getStatusBadge = (status: string) => {
 };
 
 export default function OrdersTable() {
-  const [searchTerm, setSearchTerm] = useState("");
   const [itemsPerPage, setItemsPerPage] = useState("10");
-  const [currentPage, setCurrentPage] = useState(1);
 
   return (
     <DisplayTable title="Recent Orders">

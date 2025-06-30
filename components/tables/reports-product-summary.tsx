@@ -9,7 +9,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { DisplayTable } from "../elements/display-table";
+import DisplayTable from "../elements/display-table";
 import { Icon } from "@iconify/react";
 import { productSummary } from "@/data/products-summary";
 import { poundSign } from "@/lib/utils";
@@ -23,9 +23,7 @@ import {
 import { useState } from "react";
 
 export default function ProductsSummaryTable() {
-  const [searchTerm, setSearchTerm] = useState("");
   const [itemsPerPage, setItemsPerPage] = useState("10");
-  const [currentPage, setCurrentPage] = useState(1);
   return (
     <DisplayTable title="Products Summary">
       {/* Table */}

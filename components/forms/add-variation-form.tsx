@@ -260,7 +260,6 @@ function VariationFields({ index }: { index: number }) {
   const {
     control,
     getFieldState,
-    formState: { isDirty, isValid },
   } = useFormContext();
 
   const valuesArray = useFieldArray({

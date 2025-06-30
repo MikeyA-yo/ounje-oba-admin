@@ -1,9 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { RefreshCw, Filter, Search } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -33,7 +30,7 @@ function getStockStatusColor(status: string) {
 
 export default function TopSellingProductsTable() {
   const [selectedProducts, setSelectedProducts] = useState<string[]>([]);
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery] = useState("");
 
   const handleSelectAll = (checked: boolean) => {
     if (checked) {

@@ -29,7 +29,7 @@ export default function ProductClient() {
         setUrl(data.next);
       }
     }
-  }, [status]);
+  }, [status, data?.next, page]);
 
   if (isLoading) {
     return <div></div>;

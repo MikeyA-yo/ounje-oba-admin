@@ -9,7 +9,6 @@ import {
   getPaginationRowModel,
   getSortedRowModel,
   PaginationState,
-  SortingState,
   useReactTable,
 } from "@tanstack/react-table";
 import {
@@ -69,14 +68,13 @@ export default function DisplayTable<TData, TValue>({
     },
   });
 
-  const getLastIndex = () =>
-    useMemo(() => {
-      const rowCount = table.getRowCount();
+  const getLastIndex = useMemo(() => {
+    const rowCount = table.getRowCount();
 
-      return pagination.pageSize * (pagination.pageIndex + 1) < rowCount
-        ? pagination.pageSize * (pagination.pageIndex + 1)
-        : rowCount;
-    }, [pagination.pageIndex, pagination.pageSize]);
+    return pagination.pageSize * (pagination.pageIndex + 1) < rowCount
+      ? pagination.pageSize * (pagination.pageIndex + 1)
+      : rowCount;
+  }, [table, pagination.pageSize, pagination.pageIndex]);
 
   return (
     <div className="w-full max-w-7xl mx-auto border border-grey-200 rounded-md">
@@ -250,7 +248,7 @@ export default function DisplayTable<TData, TValue>({
 
         <div className="flex-1 px-4">
           <span className="text-sm">
-            {pagination.pageIndex * pagination.pageSize + 1} – {getLastIndex()}{" "}
+            {pagination.pageIndex * pagination.pageSize + 1} – {getLastIndex}{" "}
             of {table.getRowCount()} items
           </span>
         </div>

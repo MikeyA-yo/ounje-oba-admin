@@ -26,7 +26,7 @@ export default function RoutesLayout({
     if (hydrated && !isAuthenticated) {
       router.replace("/login");
     }
-  }, [isAuthenticated, hydrated]);
+  }, [isAuthenticated, hydrated, router]);
 
   if (!hasMounted) return null;
 
