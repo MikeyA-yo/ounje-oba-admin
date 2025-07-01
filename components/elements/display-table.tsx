@@ -38,7 +38,7 @@ export default function DisplayTable<TData, TValue>({
   showSortBy = true,
   showSearch = true,
   sortOptions = [],
-  setPageSize,
+  // setPageSize,
   refresh,
 }: {
   title: string;
@@ -49,7 +49,7 @@ export default function DisplayTable<TData, TValue>({
   showSortBy?: boolean;
   showSearch?: boolean;
   sortOptions?: { key: keyof TData; value: string }[];
-  setPageSize: (size: number) => void;
+  // setPageSize: (size: number) => void;
   refresh: () => Promise<void>;
 }) {
   const [sortValue, setSortValue] = useState("");
@@ -57,7 +57,7 @@ export default function DisplayTable<TData, TValue>({
     pageIndex: 0,
     pageSize: 10,
   });
-
+  console.log(pageSize);
   const table = useReactTable({
     data,
     columns,

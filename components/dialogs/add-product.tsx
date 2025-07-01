@@ -58,6 +58,7 @@ export const AddProductDialog = ({
     },
     onSuccess: () => {
       // Handle success, e.g., show a toast, refetch products
+      console.log(file);
       console.log("Bulk upload successful!");
     },
     onError: (error) => {

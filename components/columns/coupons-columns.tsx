@@ -57,8 +57,8 @@ export const useCouponsColumns = (): ColumnDef<Coupon>[] => {
     {
       id: "actions",
       header: "Actions",
-      cell: ({ row }) => {
-        const couponId = row.original.id;
+      cell: ({}) => {
+        // const couponId = row.original.id;
 
         return <Button variant={"ghost"}>View</Button>;
       },

@@ -1,4 +1,4 @@
-import { Order, OrderItem, OrderStatus } from "@/types/order";
+import { Order, OrderStatus } from "@/types/order";
 import { ColumnDef } from "@tanstack/react-table";
 import { Button } from "../ui/button";
 import { Badge } from "../ui/badge";
@@ -86,8 +86,8 @@ export const useOrderColumns = (): ColumnDef<Order>[] => {
     {
       id: "actions",
       header: "Actions",
-      cell: ({ row }) => {
-        const orderId = row.original.id;
+      cell: ({}) => {
+        // const orderId = row.original.id;
 
         return <Button variant={"ghost"}>View</Button>;
       },

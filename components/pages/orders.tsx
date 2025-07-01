@@ -11,9 +11,9 @@ import { useOrderColumns } from "../columns/order-columns";
 
 export default function OrdersClient() {
   const columns = useOrderColumns();
-  const [pageSize, setPageSize] = useState(10);
-  const [page, setPage] = useState(1);
-  const [url, setUrl] = useState(
+  const [pageSize /*, setPageSize */] = useState(10);
+  const [page /*,  setPage */] = useState(1);
+  const [url /*,  setUrl */] = useState(
     orderManagement + `?page_size=${pageSize}` + `&page=${page}`,
   );
   const { data, isLoading, refetch } = useQuery({
@@ -40,7 +40,7 @@ export default function OrdersClient() {
           data={data.results}
           count={data.count}
           pageSize={pageSize}
-          setPageSize={(size) => setPageSize(size)}
+          // setPageSize={(size) => setPageSize(size)}
           showSearch={false}
           // sortOptions={[
           //   { key: "name", value: "Product Name" },

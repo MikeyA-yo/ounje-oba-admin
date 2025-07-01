@@ -12,16 +12,16 @@ import DisplayTable from "../elements/display-table";
 
 export default function CouponClient() {
   const columns = useCouponsColumns();
-  const [pageSize, setPageSize] = useState(10);
-  const [page, setPage] = useState(1);
-  const [url, setUrl] = useState(
+  const [pageSize /*, setPageSize */] = useState(10);
+  const [page /*, setPage */] = useState(1);
+  const [url /*, setUrl */] = useState(
     coupons + `?page_size=${pageSize}` + `&page=${page}`,
   );
 
   const { data, isLoading, refetch } = useQuery({
     queryKey: ["coupons"],
     queryFn: async () => {
-      const response = await api.get(coupons);
+      const response = await api.get(url);
 
       return response.data;
     },
@@ -43,7 +43,7 @@ export default function CouponClient() {
           data={data.results}
           count={data.count}
           pageSize={pageSize}
-          setPageSize={(size) => setPageSize(size)}
+          // setPageSize={(size) => setPageSize(size)}
           showSearch={false}
           // sortOptions={[
           //   { key: "name", value: "Product Name" },
