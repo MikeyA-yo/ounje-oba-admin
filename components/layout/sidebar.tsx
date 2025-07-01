@@ -36,12 +36,17 @@ export function AppSidebar() {
             <li
               key={item.name}
               className={cn(
-                "flex flex-row items-center gap-4 text-black-500 p-4 rounded-lg",
+                "flex flex-row items-center gap-4 text-black-500 p-4 rounded-lg hover:text-primary",
                 isActive(item.url) && "bg-primary text-white",
               )}
             >
-              <Icon icon={item.icon} />
-              <Link href={item.url}>{item.name}</Link>
+              <Link
+                href={item.url}
+                className="flex items-center gap-2 w-full h-full"
+              >
+                <Icon icon={item.icon} fontSize={"18px"} />
+                {item.name}
+              </Link>
             </li>
           ))}
         </ul>
