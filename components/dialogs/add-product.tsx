@@ -10,6 +10,9 @@ import { Button } from "../ui/button";
 import { Icon } from "@iconify/react";
 import { useDropzone } from "react-dropzone";
 import { useRouter } from "next/navigation";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import api from "@/lib/api";
+import { downloadTemplate, productsBulkUpload } from "@/lib/routes";
 
 type DialogPage = "home" | "bulk";
 
@@ -19,14 +22,62 @@ export const AddProductDialog = ({
   children: React.ReactNode;
 }) => {
   const router = useRouter();
+  const { data } = useQuery({
+    queryKey: ["download_template"],
+    queryFn: async () => {
+      const response = await api.get(downloadTemplate, {
+        responseType: "blob",
+      });
+
+      return new Blob([response.data], { type: "text/csv" });
+    },
+  });
+
+  /* 
+  curl -X POST "http://localhost:8000/api/admin/products/bulk_upload/" \
+  -H "Authorization: Bearer YOUR_TOKEN" \
+  -F "file=@products.csv" \
+  -F "update_existing=true"
+
+  as a tanstack query mutation
+   */
+  const [file, setFile] = useState<File | null>(null);
+
+  const { mutateAsync: uploadBulkProducts } = useMutation({
+    mutationFn: async (file: File) => {
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("update_existing", "true"); // or false, based on your logic
+
+      const response = await api.post(productsBulkUpload, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      return response.data;
+    },
+    onSuccess: () => {
+      // Handle success, e.g., show a toast, refetch products
+      console.log("Bulk upload successful!");
+    },
+    onError: (error) => {
+      // Handle error, e.g., show an error message
+      console.error("Bulk upload failed:", error);
+    },
+  });
+
   const [page, setPage] = useState<DialogPage>("home");
 
   const { getRootProps, getInputProps, acceptedFiles } = useDropzone({
     accept: {
       "text/csv": [".csv"],
     },
+    maxFiles: 1,
+    maxSize: 18000000,
     onDrop: (acceptedFiles) => {
-      console.log(acceptedFiles);
+      // upload the file using the mutation
+      setFile(acceptedFiles[0]);
+      uploadBulkProducts(acceptedFiles[0]);
     },
   });
 
@@ -56,9 +107,9 @@ export const AddProductDialog = ({
                   onClick={() => handlePageChange(index)}
                 >
                   {index === 0 ? (
-                    <Icon icon="hugeicons:tag-02" className="text-2xl" />
+                    <Icon icon="hugeicons:tag-02" fontSize={"24px"} />
                   ) : (
-                    <Icon icon="hugeicons:tags" className="text-2xl" />
+                    <Icon icon="hugeicons:tags" fontSize={"24px"} />
                   )}
                   <span className="text-lg">{title}</span>
                 </Button>
@@ -91,9 +142,24 @@ export const AddProductDialog = ({
               <ul className="list-disc space-y-2 mt-4 ml-4">
                 <li>
                   Download the sample template{" "}
-                  <a href="" className="underline text-primary">
+                  <Button
+                    variant={"ghost"}
+                    className="p-0 hover:bg-inherit inline underline focus-within:bg-inherit focus-within:ring-0"
+                    onClick={() => {
+                      if (data) {
+                        const url = window.URL.createObjectURL(data);
+                        const link = document.createElement("a");
+                        link.href = url;
+                        link.download = "sample_template.csv"; // default filename
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                        window.URL.revokeObjectURL(url);
+                      }
+                    }}
+                  >
                     Download template
-                  </a>
+                  </Button>
                 </li>
                 <li>Max 2,000 rows per upload</li>
                 <li>

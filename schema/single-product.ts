@@ -2,30 +2,35 @@ import { z } from "zod/v4";
 
 export const singleProductSchema = z
   .object({
-    productName: z.string().min(1, "Product name cannot be empty"),
-    category: z.string().min(1, "Category is required"),
+    name: z.string().min(1, "Product name cannot be empty"),
+    category_id: z.string().min(1, "Category is required"),
     sku: z.string().min(1, "SKU is required"),
-    stockQty: z
+    stock_quantity: z
       .string()
       .regex(/^[1-9]\d*$/, "Stock Quantity must be a positive number"),
-    lowStock: z
+    low_stock_alert: z
       .string()
       .regex(/^[1-9]\d*$/, "Low Stock Alert must be a positive number"),
-    cost: z.string().regex(/^[1-9]\d*$/, "Cost must be a positive number"),
+    price: z.string().regex(/^[1-9]\d*$/, "Cost must be a positive number"),
     description: z.string().min(1, "Description is required"),
     specification: z.string().min(1, "Specification is required"),
-    images: z
-      .any()
+    image_files: z
+      .custom<FileList>()
       .refine((files) => files instanceof FileList && files.length > 0, {
         message: "Please upload at least one image",
       }),
-    variation: z.enum(["yes", "no"], { error: "This field is required" }),
+    variation: z
+      .enum(["yes", "no"] /* , { error: "This field is required" } */)
+      .optional(),
     loyalty: z.enum(["yes", "no"], { error: "This field is required" }),
   })
-  .refine((data) => Number(data.stockQty) > Number(data.lowStock), {
-    message: "Stock Quantity must be greater than Low Stock Alert",
-    path: ["lowStock"],
-  });
+  .refine(
+    (data) => Number(data.stock_quantity) > Number(data.low_stock_alert),
+    {
+      message: "Stock Quantity must be greater than Low Stock Alert",
+      path: ["lowStock"],
+    },
+  );
 
 export const variationSchema = z.object({
   variations: z

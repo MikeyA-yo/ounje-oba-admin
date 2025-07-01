@@ -3,7 +3,7 @@
 import { singleProductSchema } from "@/schema/single-product";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod/v4";
+import { file, z } from "zod/v4";
 import {
   Form,
   FormControl,
@@ -24,32 +24,111 @@ import {
 import { Textarea } from "../ui/textarea";
 import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
 import { Button } from "../ui/button";
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { Icon } from "@iconify/react";
 import AddVariationForm from "./add-variation-form";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import api from "@/lib/api";
+import { categories as getCategories, products } from "@/lib/routes";
+import { ProductCategory } from "@/types/product";
+import { useDropzone } from "react-dropzone";
+import Image from "next/image";
+import { cn } from "@/lib/utils";
 
 export default function SingleProductForm() {
+  const [showVariationForm, setShowVariationForm] = useState(false);
+  const [files, setFiles] = useState<File[]>([]);
+  const [previews, setPreviews] = useState<string[]>([]);
+
   const form = useForm<z.infer<typeof singleProductSchema>>({
     resolver: zodResolver(singleProductSchema),
     mode: "onChange",
     defaultValues: {
-      productName: "",
-      category: "",
+      name: "",
+      category_id: "",
       sku: "",
-      stockQty: "",
-      lowStock: "",
-      cost: "",
+      stock_quantity: "",
+      low_stock_alert: "",
+      price: "",
       description: "",
       specification: "",
+      image_files: undefined,
+    },
+  });
+  const showAddVariationBtn = form.watch("variation") === "yes";
+
+  const { data: categories } = useQuery({
+    queryKey: ["categories"],
+    queryFn: async () => {
+      const response = await api.get(getCategories);
+
+      return response.data.results as ProductCategory[];
     },
   });
 
-  const [showVariationForm, setShowVariationForm] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement | null>(null);
-  const showAddVariationBtn = form.watch("variation") === "yes";
+  const mutation = useMutation({
+    mutationFn: async () => {
+      const formdata = new FormData();
+
+      Object.entries(form.getValues()).forEach(([key, value]) => {
+        if (key == "image_files") {
+          for (let i = 0; i < value.length; i++) {
+            formdata.append(key, value[i]);
+          }
+        } else {
+          formdata.append(key, value.toString());
+        }
+      });
+      const response = await api.post(products, formdata, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      return response.data;
+    },
+  });
+
+  const onDrop = (acceptedFiles: File[]) => {
+    const dataTransfer = new DataTransfer();
+    acceptedFiles.forEach((file) => {
+      dataTransfer.items.add(file);
+    });
+    form.setValue("image_files", dataTransfer.files);
+
+    const urls = acceptedFiles.map((file) => URL.createObjectURL(file));
+    setPreviews((prevImages) => [...prevImages, ...urls]);
+    setFiles((prevFiles) => [...prevFiles, ...acceptedFiles]);
+  };
+
+  const onDelete = (image: string, index: number) => {
+    URL.revokeObjectURL(image);
+    setPreviews(previews.filter((_, i) => i !== index));
+    setFiles(files.filter((_, i) => i !== index));
+
+    const dataTransfer = new DataTransfer();
+    files.forEach((file) => {
+      dataTransfer.items.add(file);
+    });
+    form.setValue("image_files", dataTransfer.files);
+  };
+
+  const {
+    getRootProps,
+    getInputProps,
+    open: openImageUpload,
+    isDragAccept,
+  } = useDropzone({
+    onDrop,
+    noClick: true,
+    multiple: true,
+    accept: { "image/*": [".png", ".gif", ".jpeg", ".jpg"] },
+    maxSize: 5 * 1024 * 1024,
+  });
 
   function onSubmit() {
-    console.log(form.getValues());
+    // console.log(form.getValues());
+    mutation.mutate();
   }
 
   return (
@@ -62,7 +141,7 @@ export default function SingleProductForm() {
             </div>
             <div className="px-4 py-6 space-y-4">
               <FormField
-                name="productName"
+                name="name"
                 control={form.control}
                 render={({ field }) => (
                   <FormItem>
@@ -77,7 +156,7 @@ export default function SingleProductForm() {
               />
 
               <FormField
-                name="category"
+                name="category_id"
                 control={form.control}
                 render={({ field }) => (
                   <FormItem>
@@ -92,7 +171,12 @@ export default function SingleProductForm() {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="hello">Hello</SelectItem>
+                        {categories &&
+                          categories.map(({ id, name }) => (
+                            <SelectItem key={id} value={id}>
+                              {name}
+                            </SelectItem>
+                          ))}
                       </SelectContent>
                     </Select>
                     <FormMessage />
@@ -114,7 +198,7 @@ export default function SingleProductForm() {
 
               <div className="flex flex-col md:flex-row gap-4 w-full">
                 <FormField
-                  name="stockQty"
+                  name="stock_quantity"
                   control={form.control}
                   render={({ field }) => (
                     <FormItem className="flex-1">
@@ -126,7 +210,7 @@ export default function SingleProductForm() {
                 />
 
                 <FormField
-                  name="lowStock"
+                  name="low_stock_alert"
                   control={form.control}
                   render={({ field }) => (
                     <FormItem className="flex-1">
@@ -139,7 +223,7 @@ export default function SingleProductForm() {
               </div>
 
               <FormField
-                name="cost"
+                name="price"
                 control={form.control}
                 render={({ field }) => (
                   <FormItem>
@@ -190,46 +274,69 @@ export default function SingleProductForm() {
             </div>
             <div className="px-4 py-6 space-y-4">
               <FormField
-                name="images"
+                name="image_files"
                 control={form.control}
-                render={() => (
+                render={({ field }) => (
                   <FormItem>
                     <FormLabel>Add Image</FormLabel>
                     <FormDescription>
                       <span>Add at least 1 image for this product</span>
                       <br />
                       <span className="text-sm">
-                        First image - is the title image. You can change the
-                        order of images: just grab your image and drag
+                        First image - is the title image.{" "}
+                        {/* You can change the
+                        order of images: just grab your image and drag */}
                       </span>
                     </FormDescription>
-                    <FormControl>
-                      <div className="mt-2 w-fit">
-                        <input
-                          ref={fileInputRef}
-                          id="images"
-                          type="file"
-                          accept="image/*"
-                          multiple={true}
-                          onChange={() => {
-                            // File handling logic would go here
-                          }}
-                          className="w-0 h-0"
-                        />
+                    <div
+                      {...getRootProps()}
+                      className={cn(
+                        isDragAccept &&
+                          "border border-dashed border-primary rounded-lg",
+                      )}
+                    >
+                      <FormControl>
+                        <input {...getInputProps()} name={field.name} />
+                      </FormControl>
+                      <div className="flex items-center gap-2">
+                        {previews.length > 0 &&
+                          previews.map((image, index) => (
+                            <div
+                              key={index}
+                              className="relative size-12 hover:brightness-50 [&>button]:hover:block"
+                              onClick={() => onDelete(image, index)}
+                            >
+                              <>
+                                <Image
+                                  src={image}
+                                  alt=""
+                                  fill
+                                  className="w-auto h-auto rounded-lg"
+                                />
+                                <button
+                                  type="button"
+                                  className="absolute hidden top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-transparent hover:bg-transparent"
+                                >
+                                  <Icon
+                                    icon="hugeicons:delete-02"
+                                    className="text-[#fff]"
+                                  />
+                                </button>
+                              </>
+                            </div>
+                          ))}
 
                         <Button
                           variant={"outline"}
                           type="button"
-                          onClick={() => {
-                            fileInputRef.current?.click();
-                          }}
+                          onClick={openImageUpload}
                           className="border border-primary border-dashed rounded-lg bg-[#FBF3FF] text-primary hover:border-none hover:text-white size-12"
                         >
                           <Icon icon="hugeicons:add-01" className="text-4xl" />
                           <span className="sr-only">Add image</span>
                         </Button>
                       </div>
-                    </FormControl>
+                    </div>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -335,7 +442,7 @@ export default function SingleProductForm() {
         <Button
           type="submit"
           className="w-full mt-8"
-          disabled={!form.formState.isValid}
+          disabled={!form.formState.isValid || mutation.isPending}
         >
           Add Product
         </Button>
