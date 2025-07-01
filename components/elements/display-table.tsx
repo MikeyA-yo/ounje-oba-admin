@@ -33,19 +33,23 @@ export default function DisplayTable<TData, TValue>({
   title,
   columns,
   data,
-  rowCount,
+  count,
+  pageSize,
   showSortBy = true,
   showSearch = true,
   sortOptions = [],
+  setPageSize,
   refresh,
 }: {
   title: string;
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
-  rowCount: number;
+  count: number;
+  pageSize: number;
   showSortBy?: boolean;
   showSearch?: boolean;
   sortOptions?: { key: keyof TData; value: string }[];
+  setPageSize: (size: number) => void;
   refresh: () => Promise<void>;
 }) {
   const [sortValue, setSortValue] = useState("");
@@ -57,7 +61,7 @@ export default function DisplayTable<TData, TValue>({
   const table = useReactTable({
     data,
     columns,
-    rowCount,
+    rowCount: count,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
@@ -225,7 +229,7 @@ export default function DisplayTable<TData, TValue>({
             value={pagination.pageSize.toString()}
             onValueChange={(val) => {
               const newSize = Number.parseInt(val);
-              const [whole, frac] = (rowCount / newSize)
+              const [whole, frac] = (count / newSize)
                 .toFixed(1)
                 .split(".")
                 .map((n) => Number.parseInt(n));
@@ -248,8 +252,8 @@ export default function DisplayTable<TData, TValue>({
 
         <div className="flex-1 px-4">
           <span className="text-sm">
-            {pagination.pageIndex * pagination.pageSize + 1} – {getLastIndex}{" "}
-            of {table.getRowCount()} items
+            {pagination.pageIndex * pagination.pageSize + 1} – {getLastIndex} of{" "}
+            {table.getRowCount()} items
           </span>
         </div>
 

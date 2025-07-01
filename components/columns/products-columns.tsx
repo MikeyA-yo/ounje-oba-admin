@@ -98,15 +98,23 @@ export const useProductColumns = (): ColumnDef<Product>[] => {
         const productId = product.id;
 
         return (
-          <div className="flex flex-row flex-nowrap text-base">
-            <Button variant="ghost" className="text-black" onClick={() => {
-              router.push(`/products/${productId}`);
-            }}>
+          <div className="flex flex-row flex-nowrap">
+            <Button
+              variant="ghost"
+              className="text-black"
+              onClick={() => {
+                router.push(`/products/${productId}`);
+              }}
+            >
               <Icon icon="hugeicons:pencil-edit-02" />
             </Button>
-            <Button variant="ghost" className="text-black" onClick={() => {
-              router.push(`/products/${productId}`);
-            }}>
+            <Button
+              variant="ghost"
+              className="text-black"
+              onClick={() => {
+                router.push(`/products/${productId}`);
+              }}
+            >
               <Icon icon="hugeicons:delete-02" />
             </Button>
           </div>
@@ -115,6 +123,3 @@ export const useProductColumns = (): ColumnDef<Product>[] => {
     },
   ];
 };
-
-// Legacy export for backwards compatibility
-export const columns: ColumnDef<Product>[] = [];

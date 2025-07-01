@@ -4,7 +4,7 @@ export const refresh = "/auth/refresh-token/";
 
 export const logout = "/auth/logout/";
 
-export const products = "/admin/products";
+export const products = "/admin/products/";
 
 export const productsStats = "/admin/products/dashboard_stats/";
 
@@ -29,7 +29,7 @@ export const productManagementIdCalculate = (id: string) =>
 
 export const orderManagement = "/admin/order-management/";
 
-export const orderManagementStats = "/admin/order-management/dashboard-stats/";
+export const orderManagementStats = "/admin/order-management/dashboard_stats/";
 
 export const orderManagementId = (id: string) =>
   `/admin/order-management/${id}/`;
@@ -59,3 +59,7 @@ export const specialDealsId = (id: string) => `/admin/special-deals/${id}/`;
 
 export const specialDealsIdValidate = (id: string) =>
   `/admin/special-deals/${id}/validate_products/`;
+
+export const categories = "/products/categories/";
+
+export const downloadTemplate = "/admin/products/download_sample_csv/";

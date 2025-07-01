@@ -28,3 +28,13 @@ export type Product = {
   created_at: Date;
   updated_at: Date;
 };
+
+export interface ProductCategory {
+  id: string;
+  name: string;
+  description: string;
+  image: string | null;
+  is_active: boolean;
+  created_at: Date;
+  updated_at: Date;
+}
