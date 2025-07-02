@@ -5,7 +5,7 @@ const isBrowser = typeof window !== "undefined";
 
 // Create an axios instance with default config
 const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL || "http://dev-backend-41hrox-35b3d6-18-134-72-195.traefik.me/api",
+  baseURL: process.env.NEXT_PUBLIC_API_URL || "https://api.ounjeoba.zylodo.com/api",
   headers: {
     "Content-Type": "application/json",
     Accept: "application/json",
