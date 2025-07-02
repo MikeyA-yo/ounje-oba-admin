@@ -6,7 +6,7 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
 axios.defaults.baseURL =
-  process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api";
+  process.env.NEXT_PUBLIC_API_URL || "https://api.ounjeoba.zylodo.com/api";
 
 export const useAuthStore = create<AuthState>()(
   persist(
