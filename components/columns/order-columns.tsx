@@ -8,7 +8,7 @@ export const useOrderColumns = (): ColumnDef<Order>[] => {
     {
       id: "sn",
       header: "#",
-      cell: ({ row }) => row.index + 1,
+      cell: ({ row }) => <p className="w-3">{row.index + 1}.</p>,
     },
     {
       accessorKey: "order_number",

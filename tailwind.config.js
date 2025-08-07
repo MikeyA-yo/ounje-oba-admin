@@ -8,6 +8,14 @@ module.exports = {
   ],
   theme: {
     extend: {
+      fontSize: {
+        h2: "2.5rem",
+        h3: "2rem",
+        h4: "1.75rem",
+        h5: "1.5rem",
+        h6: "1.375rem",
+        caption: "0.625rem",
+      },
       borderRadius: {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",

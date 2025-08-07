@@ -303,7 +303,7 @@ export default function SingleProductForm() {
                           previews.map((image, index) => (
                             <div
                               key={index}
-                              className="relative size-12 hover:brightness-50 [&>button]:hover:block"
+                              className="relative size-12 [&>button]:hover:flex"
                               onClick={() => onDelete(image, index)}
                             >
                               <>
@@ -315,7 +315,7 @@ export default function SingleProductForm() {
                                 />
                                 <button
                                   type="button"
-                                  className="absolute hidden top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-transparent hover:bg-transparent"
+                                  className="absolute hidden w-full h-full items-center justify-center bg-black/50 rounded-lg"
                                 >
                                   <Icon
                                     icon="hugeicons:delete-02"

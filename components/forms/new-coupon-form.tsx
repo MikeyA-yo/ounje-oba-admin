@@ -225,7 +225,7 @@ function DatePickerInput({
           <Button
             type="button"
             variant="ghost"
-            className="absolute right-2 top-1/2 -translate-y-1/2 p-2"
+            className="absolute right-2 top-1/2 -translate-y-1/2 p-2 text-black"
           >
             <Icon icon="hugeicons:calendar-03" />
           </Button>

@@ -13,6 +13,7 @@ import {
   AlertDialogTrigger,
 } from "../ui/alert-dialog";
 import { useAuthStore } from "@/store/auth-store";
+import Link from "next/link";
 
 export const UserPopover = () => {
   return (
@@ -28,47 +29,68 @@ export const UserPopover = () => {
             </Avatar>
           </div>
           <div>
-            <h3 className="text-lg font-semibold text-black">Ralph Edwards</h3>
-            <p className="text-sm text-grey-900">Admin</p>
+            <h3 className="text-lg font-semibold text-black mb-2">
+              Ralph Edwards
+            </h3>
+            <p className="caption text-grey-900">Admin</p>
           </div>
         </div>
       </div>
 
-      {/* Account Section */}
-      <div className="p-6 pt-4 border-b border-grey-200">
-        <h4 className="text-sm text-black-400 mb-4">Account</h4>
+      <div className="px-4 py-4 space-y-4">
+        {/* Account Section */}
+        <div className="border-b pb-4 border-grey-200">
+          <h4 className="caption text-black-400 mb-1">Account</h4>
 
-        <div className="space-y-1">
-          {/* Profile Menu Item */}
-          <Button
-            variant={"ghost"}
-            className="w-full flex items-center gap-3 py-2 px-1 justify-start text-black"
-          >
-            <Icon icon="hugeicons:user" />
-            <span className="font-medium">Profile</span>
-          </Button>
+          <div className="space-y-2 body-3-medium">
+            {/* Profile Menu Item */}
+            <Button
+              asChild
+              variant={"ghost"}
+              className="w-full flex items-center gap-3 py-2 px-2 justify-start text-black"
+            >
+              <Link href={""}>
+                <Icon icon="hugeicons:user" />
+                <span className="">Profile</span>
+              </Link>
+            </Button>
 
-          {/* Settings Menu Item */}
-          <Button
-            variant={"ghost"}
-            className="w-full flex items-center gap-3 py-2 px-1 justify-start text-black"
-          >
-            <Icon icon="hugeicons:settings-01" />
-            <span className="font-medium">Settings</span>
-          </Button>
+            <Button
+              asChild
+              variant={"ghost"}
+              className="w-full flex items-center gap-3 py-2 px-2 justify-start text-black"
+            >
+              <Link href={"/admin"}>
+                <Icon icon="hugeicons:user-multiple" />
+                <span className="">Admin Management</span>
+              </Link>
+            </Button>
+
+            {/* Settings Menu Item */}
+            <Button
+              asChild
+              variant={"ghost"}
+              className="w-full flex items-center gap-3 py-2 px-2 justify-start text-black"
+            >
+              <Link href={""}>
+                <Icon icon="hugeicons:settings-01" />
+                <span className="">Settings</span>
+              </Link>
+            </Button>
+          </div>
         </div>
-      </div>
 
-      <div className="p-6 pt-4">
-        <LogoutDialog>
-          <Button
-            variant={"ghost"}
-            className="w-full flex items-center gap-3 py-2 px-1 justify-start text-error hover:text-error-200"
-          >
-            <Icon icon="hugeicons:logout-02" />
-            <span className="font-medium">Logout</span>
-          </Button>
-        </LogoutDialog>
+        <div className="">
+          <LogoutDialog>
+            <Button
+              variant={"ghost"}
+              className="w-full flex items-center gap-3 py-2 px-1 justify-start text-error hover:text-error-300"
+            >
+              <Icon icon="hugeicons:logout-02" />
+              <span className="">Logout</span>
+            </Button>
+          </LogoutDialog>
+        </div>
       </div>
     </div>
   );

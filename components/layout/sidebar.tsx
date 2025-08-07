@@ -37,7 +37,8 @@ export function AppSidebar() {
               key={item.name}
               className={cn(
                 "flex flex-row items-center gap-4 text-black-500 p-4 rounded-lg hover:text-primary",
-                isActive(item.url) && "bg-primary text-white",
+                isActive(item.url) &&
+                  "bg-primary text-white hover:text-white/80",
               )}
             >
               <Link

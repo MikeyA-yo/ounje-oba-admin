@@ -1,0 +1,51 @@
+// User Management Data
+export const users = [
+  {
+    id: 1,
+    fullName: "Amina Yusuf",
+    email: "amina.yusuf@ounjeoba.com",
+    role: "Admin",
+    permissionLevel: "Full Access",
+    status: "Inactive",
+  },
+  {
+    id: 2,
+    fullName: "Kehinde Balogun",
+    email: "kehinde.balogun@ounjeoba.com",
+    role: "Staff",
+    permissionLevel: "Limited Access",
+    status: "Inactive",
+  },
+  {
+    id: 3,
+    fullName: "Chimaobi Eze",
+    email: "chima.eze@ounjeoba.com",
+    role: "Staff",
+    permissionLevel: "Limited Access",
+    status: "Active",
+  },
+  {
+    id: 4,
+    fullName: "Teniola Adeleke",
+    email: "teniola.adeleke@ounjeoba.com",
+    role: "Admin",
+    permissionLevel: "Full Access",
+    status: "Inactive",
+  },
+  {
+    id: 5,
+    fullName: "Blessing Iroko",
+    email: "blessing.iroko@ounjeoba.com",
+    role: "Staff",
+    permissionLevel: "Limited Access",
+    status: "Active",
+  },
+  {
+    id: 6,
+    fullName: "Musa Abubakar",
+    email: "musa.abubakar@ounjeoba.com",
+    role: "Staff",
+    permissionLevel: "Limited Access",
+    status: "Pending",
+  },
+];

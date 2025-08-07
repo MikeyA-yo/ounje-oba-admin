@@ -31,8 +31,8 @@ export const DetailCard = ({
         <h2 className="text-nowrap">{title}</h2>
       </div>
       <div className="space-y-4">
-        <p className="text-2xl font-semibold">{details}</p>
-        <div>{children}</div>
+        <p className="h5-semibold">{details}</p>
+        <div className="body-3">{children}</div>
       </div>
     </div>
   );

@@ -19,7 +19,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${albert.className}`}>
+      <body className={`${albert.className} body-2`}>
         <QueryProvider>
           <main>{children}</main>
         </QueryProvider>

@@ -28,6 +28,10 @@ import {
 } from "../ui/select";
 import { Icon } from "@iconify/react";
 import { useMemo, useState } from "react";
+import { cn } from "@/lib/utils";
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
+import { Calendar } from "../ui/calendar";
+import { type DateRange } from "react-day-picker";
 
 export default function DisplayTable<TData, TValue>({
   title,
@@ -36,8 +40,11 @@ export default function DisplayTable<TData, TValue>({
   count,
   pageSize,
   showSortBy = true,
+  showDateRange = false,
   showSearch = true,
   sortOptions = [],
+  showFooter = true,
+  wideRows = false,
   // setPageSize,
   refresh,
 }: {
@@ -45,19 +52,23 @@ export default function DisplayTable<TData, TValue>({
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
   count: number;
-  pageSize: number;
+  pageSize?: number;
   showSortBy?: boolean;
+  showDateRange?: boolean;
   showSearch?: boolean;
   sortOptions?: { key: keyof TData; value: string }[];
+  showFooter?: boolean;
+  wideRows?: boolean;
   // setPageSize: (size: number) => void;
   refresh: () => Promise<void>;
 }) {
   const [sortValue, setSortValue] = useState("");
+  const [dateRange, setDateRange] = useState<DateRange | undefined>();
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
-    pageSize: 10,
+    pageSize: pageSize ?? count,
   });
-  console.log(pageSize);
+  // console.log(pageSize);
   const table = useReactTable({
     data,
     columns,
@@ -81,10 +92,10 @@ export default function DisplayTable<TData, TValue>({
   }, [table, pagination.pageSize, pagination.pageIndex]);
 
   return (
-    <div className="w-full max-w-7xl mx-auto border border-grey-200 rounded-md">
+    <div className="w-full mx-auto border border-grey-200 rounded-md">
       <div className="flex flex-col md:flex-row items-center justify-between px-4 py-6 gap-y-4">
         <div>
-          <h1 className="text-2xl font-medium">{title}</h1>
+          <h2 className="h6-medium">{title}</h2>
           {!showSearch && (
             <div className="relative flex-1 md:flex-none">
               <Icon
@@ -104,12 +115,33 @@ export default function DisplayTable<TData, TValue>({
         <div className="flex w-full md:w-fit flex-wrap justify-center md:justify-end items-center gap-3">
           <Button
             variant="outline"
-            size={"md"}
-            className="border-[#8D8D8D] text-black"
+            className="border-[#8D8D8D] text-black py-2.5"
             onClick={async () => await refresh()}
           >
             <Icon icon="hugeicons:arrow-reload-horizontal" />
           </Button>
+
+          {showDateRange && (
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant={"outline"}
+                  size={"md"}
+                  className="gap-2 border-[#8D8D8D] text-black"
+                >
+                  Select date range
+                  <Icon icon={"iconoir:nav-arrow-down-solid"} />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0">
+                <Calendar
+                  mode="range"
+                  selected={dateRange}
+                  onSelect={setDateRange}
+                />
+              </PopoverContent>
+            </Popover>
+          )}
 
           <Button
             variant="outline"
@@ -121,27 +153,46 @@ export default function DisplayTable<TData, TValue>({
           </Button>
 
           {showSortBy && (
-            <Select
-              value={sortValue}
-              onValueChange={(val) => {
-                setSortValue(val);
+            <div className="relative">
+              {sortValue && (
+                <Button
+                  type="reset"
+                  variant="ghost"
+                  size="sm"
+                  className="absolute top-1/2 -translate-y-1/2 right-8"
+                  onClick={() => {
+                    if (sortValue) {
+                      setSortValue("");
+                      table.resetSorting();
+                    }
+                  }}
+                >
+                  <Icon icon={"hugeicons:multiplication-sign"} />
+                </Button>
+              )}
 
-                if (val !== "") {
-                  table.setSorting(() => [{ id: val, desc: false }]);
-                }
-              }}
-            >
-              <SelectTrigger className="w-36 border-[#8D8D8D]">
-                <SelectValue placeholder="Sort By" />
-              </SelectTrigger>
-              <SelectContent>
-                {sortOptions.map((option, index) => (
-                  <SelectItem key={index} value={option.key as string}>
-                    {option.value}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+              <Select
+                value={sortValue}
+                onValueChange={(val) => {
+                  setSortValue(val);
+
+                  if (val !== "") {
+                    table.setSorting(() => [{ id: val, desc: false }]);
+                  }
+                }}
+              >
+                <SelectTrigger showFilledIcon className="w-40 border-[#8D8D8D]">
+                  <SelectValue placeholder="Sort By" />
+                </SelectTrigger>
+                <SelectContent>
+                  {sortOptions.map((option, index) => (
+                    <SelectItem key={index} value={option.key as string}>
+                      {option.value}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
           )}
 
           {showSearch && (
@@ -158,20 +209,6 @@ export default function DisplayTable<TData, TValue>({
               />
             </div>
           )}
-
-          <Button
-            type="reset"
-            variant="outline"
-            size="md"
-            onClick={() => {
-              if (sortValue) {
-                setSortValue("");
-                table.resetSorting();
-              }
-            }}
-          >
-            Clear
-          </Button>
         </div>
       </div>
 
@@ -181,7 +218,7 @@ export default function DisplayTable<TData, TValue>({
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (
-                  <TableHead key={header.id}>
+                  <TableHead key={header.id} className="first:pl-4 body-3">
                     {flexRender(
                       header.column.columnDef.header,
                       header.getContext(),
@@ -191,15 +228,18 @@ export default function DisplayTable<TData, TValue>({
               </TableRow>
             ))}
           </TableHeader>
-          <TableBody>
+          <TableBody className="[&_tr:first-of-type_td]:pt-5">
             {table.getRowModel().rows.length ? (
               table.getRowModel().rows.map((row) => (
                 <TableRow
                   key={row.id}
-                  className="border-none hover:bg-grey-100 [&_td]:py-6"
+                  className={cn(
+                    "border-none hover:bg-grey-100",
+                    wideRows ? "[&_td]:py-4" : "[&_td]:py-2",
+                  )}
                 >
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
+                    <TableCell key={cell.id} className="first:pl-4">
                       {flexRender(
                         cell.column.columnDef.cell,
                         cell.getContext(),
@@ -222,68 +262,70 @@ export default function DisplayTable<TData, TValue>({
         </Table>
       </div>
 
-      <div className="mt-2 text-black bg-[#F7F7F7] border-t border-[#E0E0E0] flex items-center justify-between">
-        <div className="flex items-center gap-2 px-4 py-1 border-r border-[#E0E0E0]">
-          <span className="text-sm">Items per page:</span>
-          <Select
-            value={pagination.pageSize.toString()}
-            onValueChange={(val) => {
-              const newSize = Number.parseInt(val);
-              const [whole, frac] = (count / newSize)
-                .toFixed(1)
-                .split(".")
-                .map((n) => Number.parseInt(n));
-              console.log(whole, frac);
-              const newIndex = frac > 0 ? whole + 1 - 1 : whole - 1;
+      {showFooter && (
+        <div className="mt-2 text-black bg-[#F7F7F7] border-t border-[#E0E0E0] flex items-center justify-between">
+          <div className="flex items-center gap-2 px-4 py-1 border-r border-[#E0E0E0]">
+            <span className="text-sm">Items per page:</span>
+            <Select
+              value={pagination.pageSize.toString()}
+              onValueChange={(val) => {
+                const newSize = Number.parseInt(val);
+                const [whole, frac] = (count / newSize)
+                  .toFixed(1)
+                  .split(".")
+                  .map((n) => Number.parseInt(n));
+                console.log(whole, frac);
+                const newIndex = frac > 0 ? whole + 1 - 1 : whole - 1;
 
-              setPagination({ pageIndex: newIndex, pageSize: newSize });
-            }}
-          >
-            <SelectTrigger className="w-fit h-8 border-none">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="10">10</SelectItem>
-              <SelectItem value="25">25</SelectItem>
-              <SelectItem value="50">50</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
+                setPagination({ pageIndex: newIndex, pageSize: newSize });
+              }}
+            >
+              <SelectTrigger className="w-fit h-8 border-none">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="10">10</SelectItem>
+                <SelectItem value="25">25</SelectItem>
+                <SelectItem value="50">50</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
 
-        <div className="flex-1 px-4">
-          <span className="text-sm">
-            {pagination.pageIndex * pagination.pageSize + 1} – {getLastIndex} of{" "}
-            {table.getRowCount()} items
-          </span>
-        </div>
-
-        <div className="flex items-center gap-4 py-1 border-l border-[#E0E0E0] pl-4">
-          <div className="flex items-center gap-2">
+          <div className="flex-1 px-4">
             <span className="text-sm">
-              Page {pagination.pageIndex + 1} of {table.getPageCount()} pages
+              {pagination.pageIndex * pagination.pageSize + 1} – {getLastIndex}{" "}
+              of {table.getRowCount()} items
             </span>
+          </div>
 
-            <div className="">
-              <Button
-                variant="ghost"
-                className="text-black h-8 w-8 border-l rounded-none border-[#e0e0e0]"
-                disabled={!table.getCanPreviousPage()}
-                onClick={() => table.previousPage()}
-              >
-                <Icon icon="hugeicons:arrow-left-01" />
-              </Button>
-              <Button
-                variant="ghost"
-                className="text-black h-8 w-8 border-l rounded-none border-[#e0e0e0]"
-                disabled={!table.getCanNextPage()}
-                onClick={() => table.nextPage()}
-              >
-                <Icon icon="hugeicons:arrow-right-01" />
-              </Button>
+          <div className="flex items-center gap-4 py-1 border-l border-[#E0E0E0] pl-4">
+            <div className="flex items-center gap-2">
+              <span className="text-sm">
+                Page {pagination.pageIndex + 1} of {table.getPageCount()} pages
+              </span>
+
+              <div className="">
+                <Button
+                  variant="ghost"
+                  className="text-black h-8 w-8 border-l rounded-none border-[#e0e0e0]"
+                  disabled={!table.getCanPreviousPage()}
+                  onClick={() => table.previousPage()}
+                >
+                  <Icon icon="hugeicons:arrow-left-01" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  className="text-black h-8 w-8 border-l rounded-none border-[#e0e0e0]"
+                  disabled={!table.getCanNextPage()}
+                  onClick={() => table.nextPage()}
+                >
+                  <Icon icon="hugeicons:arrow-right-01" />
+                </Button>
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

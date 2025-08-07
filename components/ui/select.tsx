@@ -13,10 +13,15 @@ const SelectGroup = SelectPrimitive.Group;
 
 const SelectValue = SelectPrimitive.Value;
 
+interface SelectTriggerProps
+  extends React.ComponentPropsWithoutRef<typeof SelectPrimitive.Trigger> {
+  showFilledIcon?: boolean;
+}
+
 const SelectTrigger = React.forwardRef<
   React.ElementRef<typeof SelectPrimitive.Trigger>,
-  React.ComponentPropsWithoutRef<typeof SelectPrimitive.Trigger>
->(({ className, children, ...props }, ref) => (
+  SelectTriggerProps
+>(({ className, children, showFilledIcon = false, ...props }, ref) => (
   <SelectPrimitive.Trigger
     ref={ref}
     className={cn(
@@ -27,7 +32,11 @@ const SelectTrigger = React.forwardRef<
   >
     {children}
     <SelectPrimitive.Icon asChild>
-      <Icon icon="hugeicons:arrow-down-01" />
+      {showFilledIcon ? (
+        <Icon icon="iconoir:nav-arrow-down-solid" className="text-black" />
+      ) : (
+        <Icon icon="hugeicons:arrow-down-01" />
+      )}
     </SelectPrimitive.Icon>
   </SelectPrimitive.Trigger>
 ));
