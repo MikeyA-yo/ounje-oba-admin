@@ -2,7 +2,6 @@ import { ordersTrend } from "@/data/home";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import {
   Cell,
-  Label,
   Legend,
   Pie,
   PieChart,

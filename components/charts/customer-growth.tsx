@@ -31,8 +31,7 @@ export default function CustomerGrowth() {
           <Tooltip
             isAnimationActive={false}
             cursor={false}
-            content={({ active, payload, ...props }) => {
-              // console.log(props);
+            content={({ active, payload }) => {
               const isVisible = active && payload && payload.length;
               return (
                 <>

@@ -5,21 +5,13 @@ import {
   BarChart,
   CartesianGrid,
   Label,
-  Legend,
   ResponsiveContainer,
   XAxis,
   YAxis,
 } from "recharts";
-import { ChartConfig, ChartContainer } from "../ui/chart";
 import { coupons } from "@/data/coupon-performance";
 import { Icon } from "@iconify/react/dist/iconify.js";
 
-const chartConfig = {
-  usageCount: {
-    label: "Coupon Codes",
-    color: "#000",
-  },
-} satisfies ChartConfig;
 
 export default function CouponPerformanceChart() {
   return (

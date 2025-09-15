@@ -1,4 +1,3 @@
-import { ordersTrend } from "@/data/home";
 import { paymentMethod } from "@/data/reports";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import {
@@ -96,8 +95,7 @@ export default function PaymentMethodChart() {
           <Label
             x={"50%"}
             y={"50%"}
-            content={({ x, y, ...props }) => {
-              // console.log(props);
+            content={({ x, y }) => {
               return (
                 <text x={x} y={y} textAnchor="middle" dominantBaseline="middle">
                   <tspan x="50%" dy="-0.6em" className="fill-black-400 body-3">

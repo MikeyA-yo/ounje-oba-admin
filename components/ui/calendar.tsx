@@ -224,7 +224,6 @@ function Calendar({
         ),
         MonthGrid: ({ className, children, ...props }) => (
           <MonthGrid
-            children={children}
             className={className}
             displayYears={displayYears}
             startMonth={startMonth}
@@ -232,7 +231,9 @@ function Calendar({
             navView={navView}
             setNavView={setNavView}
             {...props}
-          />
+          >
+            {children}
+          </MonthGrid>
         ),
         ...components,
       }}
@@ -351,9 +352,8 @@ function Nav({
         disabled={isPreviousDisabled}
         aria-label={
           navView === "years"
-            ? `Go to the previous ${
-                displayYears.to - displayYears.from + 1
-              } years`
+            ? `Go to the previous ${displayYears.to - displayYears.from + 1
+            } years`
             : labelPrevious(previousMonth)
         }
         onClick={handlePreviousClick}
@@ -488,7 +488,7 @@ function YearGrid({
               className={cn(
                 "h-7 w-full text-sm font-normal text-foreground",
                 displayYears.from + i === new Date().getFullYear() &&
-                  "bg-accent font-medium text-accent-foreground",
+                "bg-accent font-medium text-accent-foreground",
               )}
               variant="ghost"
               onClick={() => {

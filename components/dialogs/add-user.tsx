@@ -29,9 +29,13 @@ export default function AddUserDialog({
   const [error, setError] = useState("");
 
   function validateEmail(value: string) {
-    const isValid = z.email().safeParse(value);
+    const isValid = z.string().email().safeParse(value);
 
-    isValid.success ? setError("") : setError("Invalid email address");
+    if (isValid.success) {
+      setError("");
+    } else {
+      setError("Invalid email address");
+    }
   }
 
   return (

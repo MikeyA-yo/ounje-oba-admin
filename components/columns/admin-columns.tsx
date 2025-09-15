@@ -3,7 +3,6 @@ import { ColumnDef } from "@tanstack/react-table";
 import { Badge } from "../ui/badge";
 import { Button } from "../ui/button";
 import { Icon } from "@iconify/react/dist/iconify.js";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 
 export const useAdminColumns = (): ColumnDef<AdminUser>[] => {

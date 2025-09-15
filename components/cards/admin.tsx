@@ -1,10 +1,6 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
 import { DetailCard } from "../elements/detail-card";
-import api from "@/lib/api";
-import { orderManagementStats } from "@/lib/routes";
-import { Skeleton } from "../ui/skeleton";
 
 export default function AdminCards() {
   return (

@@ -8,7 +8,6 @@ import { ExportDialog } from "../dialogs/export";
 import { AddProductDialog } from "../dialogs/add-product";
 import { AddCouponDialog } from "../dialogs/add-coupon";
 import AddUserDialog from "../dialogs/add-user";
-import Link from "next/link";
 
 export const SectionHeader = () => {
   const route = usePathname();

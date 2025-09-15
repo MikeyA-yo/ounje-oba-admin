@@ -10,7 +10,6 @@ import {
 } from "recharts";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { revenueTrend } from "@/data/home";
-import { Fragment } from "react";
 
 export default function RevenueTrendChart() {
   return (
