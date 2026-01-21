@@ -202,20 +202,64 @@ export async function getTransactionStats() {
     };
 }
 
+export async function getReportStats() {
+    // Re-using logic from getDashboardStats but formatting for ReportCards
+    const { productsCount, ordersCount, usersCount, totalRevenue } = await getDashboardStats();
+
+    // Mock growth for now
+    return {
+        totalRevenue: { value: totalRevenue, growth: 12 },
+        totalOrders: { value: ordersCount, growth: 5 },
+        totalCustomers: { value: usersCount, growth: 8 },
+        newCustomers: { value: Math.floor(usersCount * 0.1), growth: 2 }, // Mock new customers as 10% of total
+    };
+}
+
 export async function getRevenueData() {
-    // Mock data for charts or real aggregation if Supabase supports it easily (Group By)
-    // Supabase JS client doesn't support aggregate functions well directly without RPC.
-    // We'll return some mock data based on real orders if possible, or just static for now to replace the hardcoded hook.
+    // Mock data for revenue trend
+    // Real implementation would aggregate orders by date
 
     return [
-        { name: "Mon", total: Math.floor(Math.random() * 5000) + 1000 },
-        { name: "Tue", total: Math.floor(Math.random() * 5000) + 1000 },
-        { name: "Wed", total: Math.floor(Math.random() * 5000) + 1000 },
-        { name: "Thu", total: Math.floor(Math.random() * 5000) + 1000 },
-        { name: "Fri", total: Math.floor(Math.random() * 5000) + 1000 },
-        { name: "Sat", total: Math.floor(Math.random() * 5000) + 1000 },
-        { name: "Sun", total: Math.floor(Math.random() * 5000) + 1000 },
+        { day: "Mon", grossRevenue: Math.floor(Math.random() * 5000) + 1000, netRevenue: Math.floor(Math.random() * 4000) + 800 },
+        { day: "Tue", grossRevenue: Math.floor(Math.random() * 5000) + 1000, netRevenue: Math.floor(Math.random() * 4000) + 800 },
+        { day: "Wed", grossRevenue: Math.floor(Math.random() * 5000) + 1000, netRevenue: Math.floor(Math.random() * 4000) + 800 },
+        { day: "Thu", grossRevenue: Math.floor(Math.random() * 5000) + 1000, netRevenue: Math.floor(Math.random() * 4000) + 800 },
+        { day: "Fri", grossRevenue: Math.floor(Math.random() * 5000) + 1000, netRevenue: Math.floor(Math.random() * 4000) + 800 },
+        { day: "Sat", grossRevenue: Math.floor(Math.random() * 5000) + 1000, netRevenue: Math.floor(Math.random() * 4000) + 800 },
+        { day: "Sun", grossRevenue: Math.floor(Math.random() * 5000) + 1000, netRevenue: Math.floor(Math.random() * 4000) + 800 },
     ];
+}
+
+export async function getCustomerGrowthData() {
+    // Mock data for customer growth
+    return [
+        { day: 1, customers: 120 },
+        { day: 5, customers: 135 },
+        { day: 10, customers: 150 },
+        { day: 15, customers: 180 },
+        { day: 20, customers: 220 },
+        { day: 25, customers: 250 },
+        { day: 30, customers: 300 },
+    ];
+}
+
+export async function getPaymentMethodStats() {
+    const supabase = await createClient();
+    const { data: orders } = await supabase.from("orders").select("payment_method");
+
+    const stats: Record<string, number> = {};
+    const total = orders?.length || 0;
+
+    orders?.forEach(o => {
+        const method = o.payment_method || "Unknown";
+        stats[method] = (stats[method] || 0) + 1;
+    });
+
+    return Object.entries(stats).map(([method, count]) => ({
+        method,
+        percentage: total > 0 ? Math.round((count / total) * 100) : 0,
+        count
+    }));
 }
 
 export async function getOrdersStatusStats() {

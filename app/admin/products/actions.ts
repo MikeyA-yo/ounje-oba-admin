@@ -117,3 +117,26 @@ export async function createProduct(formData: FormData) {
     revalidatePath("/products");
     return data;
 }
+
+export async function getProductStats() {
+    const supabase = await createClient();
+    const { data: products } = await supabase.from("products").select("stock_quantity, low_stock_alert");
+
+    const total_products = products?.length || 0;
+    const out_of_stock = products?.filter(p => p.stock_quantity === 0).length || 0;
+    // Assuming active means available/in-stock (stock > 0)
+    const active_products = products?.filter(p => p.stock_quantity > 0).length || 0;
+
+    // Low stock: stock <= low_stock_alert OR stock <= 10 if alert not set
+    const low_stock = products?.filter(p => {
+        const threshold = p.low_stock_alert || 10;
+        return p.stock_quantity > 0 && p.stock_quantity <= threshold;
+    }).length || 0;
+
+    return {
+        total_products,
+        active_products, // In Stock
+        low_stock,
+        out_of_stock,
+    };
+}
