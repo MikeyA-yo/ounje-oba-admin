@@ -9,11 +9,10 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import { coupons } from "@/data/coupon-performance";
 import { Icon } from "@iconify/react/dist/iconify.js";
 
 
-export default function CouponPerformanceChart() {
+export default function CouponPerformanceChart({ data }: { data: any[] }) {
   return (
     <div className="border rounded-lg p-4">
       <div className="flex justify-between items-center gap-2">
@@ -24,7 +23,7 @@ export default function CouponPerformanceChart() {
         </div>
       </div>
       <ResponsiveContainer width={"100%"} height={400} className="mt-10">
-        <BarChart data={coupons} margin={{ left: 20, bottom: 25, top: 10 }}>
+        <BarChart data={data} margin={{ left: 20, bottom: 25, top: 10 }}>
           <CartesianGrid vertical={false} className="!stroke-gray-100" />
           <XAxis
             dataKey="couponCode"

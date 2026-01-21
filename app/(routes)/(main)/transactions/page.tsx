@@ -2,35 +2,46 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { TransactionCards } from "@/components/cards/transactions";
-import api from "@/lib/api";
 import DisplayTable from "@/components/elements/display-table";
-import { transactions } from "@/data/transactions";
 import { useTransactionsHistory } from "@/components/columns/transactions-columns";
+import { getTransactions, getTransactionStats } from "@/app/admin/analytics/actions";
 
 export default function Transactions() {
   const column = useTransactionsHistory();
-  const {} = useQuery({
+  const { data, isLoading } = useQuery({
     queryKey: ["transactions"],
-    retry: false,
-    queryFn: async () => {
-      const response = await api.get("");
+    queryFn: async () => await getTransactions({ page: 1, pageSize: 20 }),
+  });
 
-      return response.data;
-    },
+  const { data: stats, isLoading: isLoadingStats } = useQuery({
+    queryKey: ["transaction-stats"],
+    queryFn: async () => await getTransactionStats(),
   });
 
   return (
     <section className="mt-4">
       <div className="space-y-6">
-        <TransactionCards />
-        <DisplayTable
-          title="Transaction History"
-          data={transactions}
-          columns={column}
-          count={transactions.length}
-          refresh={async () => {}}
-        />
-        {/* <TransactionHistoryTable /> */}
+        {isLoadingStats || !stats ? (
+          <div className="space-y-4">
+            {/* Loading Skeleton */}
+          </div>
+        ) : (
+          <TransactionCards stats={stats} />
+        )}
+
+        {isLoading ? (
+          <div className="space-y-4">
+            {/* Skeleton or loading state */}
+          </div>
+        ) : (
+          <DisplayTable
+            title="Transaction History"
+            data={data?.results || []}
+            columns={column as any} // Casting as any temporarily if type mismatch due to strict ColumnDef
+            count={data?.count || 0}
+            refresh={async () => { }}
+          />
+        )}
       </div>
     </section>
   );

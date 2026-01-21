@@ -4,19 +4,19 @@ import { poundSign } from "@/lib/utils";
 import { DetailCard } from "../elements/detail-card";
 import { Icon } from "@iconify/react";
 
-export const ReportCards = () => {
+export const ReportCards = ({ stats }: { stats: any }) => {
   return (
     <div className="flex flex-col @md/main:grid @md/main:grid-cols-2 @md/main:grid-flow-row @4xl/main:flex @4xl/main:flex-row @4xl/main:flex-wrap gap-4 items-center w-full">
       <DetailCard
         title="Total Revenue"
-        details={poundSign + " 2,456"}
+        details={`₦${stats?.totalRevenue?.value.toLocaleString() || 0}`}
         icon="hugeicons:money-bag-02"
         iconColor="#5C1978"
         bgColor="#F6F2F7"
       >
         <div className="flex flex-row flex-nowrap justify-between text-sm">
           <div className="text-black-500 space-x-2">
-            <span>+15.03%</span>
+            <span>+{stats?.totalRevenue?.growth}%</span>
             <Icon className="inline" icon="hugeicons:trade-up" />
           </div>
           <p className="text-grey-800">Last 30 days</p>
@@ -24,14 +24,14 @@ export const ReportCards = () => {
       </DetailCard>
       <DetailCard
         title="Total Orders"
-        details={poundSign + " 1,456"}
+        details={`${stats?.totalOrders?.value || 0}`}
         icon="hugeicons:package"
         iconColor="#785D19"
         bgColor="#FFF9E4"
       >
         <div className="flex flex-row flex-nowrap justify-between text-sm">
           <div className="text-black-500 space-x-2">
-            <span>+15.03%</span>
+            <span>+{stats?.totalOrders?.growth}%</span>
             <Icon className="inline" icon="hugeicons:trade-up" />
           </div>
           <p className="text-grey-800">Last 30 days</p>
@@ -39,14 +39,14 @@ export const ReportCards = () => {
       </DetailCard>
       <DetailCard
         title="Total Customers"
-        details="24"
+        details={`${stats?.totalCustomers?.value || 0}`}
         icon="hugeicons:user-multiple"
         iconColor="#196278"
         bgColor="#EBFDFF"
       >
         <div className="flex flex-row flex-nowrap justify-between text-sm">
           <div className="text-black-500 space-x-2">
-            <span>+15.03%</span>
+            <span>+{stats?.totalCustomers?.growth}%</span>
             <Icon className="inline" icon="hugeicons:trade-up" />
           </div>
           <p className="text-grey-800">Last 30 days</p>
@@ -54,14 +54,14 @@ export const ReportCards = () => {
       </DetailCard>
       <DetailCard
         title="New Customers"
-        details="7"
+        details={`${stats?.newCustomers?.value || 0}`}
         icon="hugeicons:user-add-02"
         iconColor="#24A148"
         bgColor="#F1F9F3"
       >
         <div className="flex flex-row flex-nowrap justify-between text-sm">
           <div className="text-black-500 space-x-2">
-            <span>+15.03%</span>
+            <span>+{stats?.newCustomers?.growth}%</span>
             <Icon className="inline" icon="hugeicons:trade-up" />
           </div>
           <p className="text-grey-800">Last 30 days</p>

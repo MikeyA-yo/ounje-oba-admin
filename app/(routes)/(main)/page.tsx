@@ -1,19 +1,25 @@
+
 "use client";
 
-import { useQueries } from "@tanstack/react-query";
 import { HomeCards } from "@/components/cards/home";
-import api from "@/lib/api";
-import { orderManagement, products } from "@/lib/routes";
-import { Skeleton } from "@/components/ui/skeleton";
 import DisplayTable from "@/components/elements/display-table";
 import {
   useSummaryColumns,
   useTopProductsColums,
 } from "@/components/columns/dashboard-columns";
 import { SummaryTable } from "@/components/elements/summary-table";
-import { recentOrders, topCustomers } from "@/data/home";
+// import { topCustomers } from "@/data/home"; // Keeping topCustomers mock for now as we don't have a good metric yet
 import RevenueTrendChart from "@/components/charts/dashboard-revenue-trend";
 import OrdersTrendChart from "@/components/charts/dashboard-orders-trend";
+import { useQuery } from "@tanstack/react-query";
+import {
+  getDashboardStats,
+  getRevenueData,
+  getTopCustomers,
+} from "@/app/admin/analytics/actions";
+import { getProducts } from "@/app/admin/products/actions";
+import { getOrders } from "@/app/admin/orders/actions";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function Home() {
   const topSellingColumns = useTopProductsColums();
@@ -22,28 +28,43 @@ export default function Home() {
   const summaryColumns = useSummaryColumns();
   const summaryCount = 8;
 
-  const results = useQueries({
-    queries: ["products", "orders"].map((query, i) => ({
-      queryKey: ["home " + query],
-      queryFn: async () => {
-        const response = await api.get(i === 0 ? products : orderManagement);
-
-        return response.data;
-      },
-    })),
+  const { data: stats, isLoading: isLoadingStats } = useQuery({
+    queryKey: ["dashboard-stats"],
+    queryFn: async () => await getDashboardStats(),
   });
 
-  const isLoading = results.reduce(
-    (prev, curr) => prev || curr.isLoading,
-    false,
-  );
-  const hasData = results.reduce((prev, curr) => prev || !!curr.data, false);
+  const { data: productsData, isLoading: isLoadingProducts } = useQuery({
+    queryKey: ["dashboard-products"],
+    queryFn: async () => await getProducts({ page: 1, pageSize: topSellingCount }),
+  });
+
+  const { data: ordersData, isLoading: isLoadingOrders } = useQuery({
+    queryKey: ["dashboard-orders"],
+    queryFn: async () => await getOrders({ page: 1, pageSize: summaryCount }),
+  });
+
+  const { data: topCustomersData, isLoading: isLoadingCustomers } = useQuery({
+    queryKey: ["dashboard-top-customers"],
+    queryFn: async () => await getTopCustomers(),
+  });
+
+  // Re-use logic for loading state
+  const isLoading = isLoadingStats || isLoadingProducts || isLoadingOrders || isLoadingCustomers;
 
   return (
     <section className="mt-6">
       <div className="space-y-6">
-        <HomeCards />
-        {isLoading || !hasData ? (
+        {isLoading || !stats ? (
+          <div className="space-y-4">
+            <Skeleton className="h-32 w-full" />
+            <Skeleton className="h-10 w-full" />
+            <Skeleton className="h-32 w-full" />
+          </div>
+        ) : (
+          <HomeCards stats={stats} />
+        )}
+
+        {isLoading ? (
           <div className="space-y-4">
             <Skeleton className="h-10 w-full" />
             <Skeleton className="h-32 w-full" />
@@ -53,16 +74,14 @@ export default function Home() {
             <DisplayTable
               title="Top Selling Products"
               columns={topSellingColumns}
-              data={results[0].data.results.slice(0, topSellingCount)}
-              count={topSellingCount}
+              data={productsData?.results || []}
+              count={productsData?.count || 0}
               showFooter={false}
               showSortBy={false}
-              refresh={async () => {
-                await results[0].refetch();
-              }}
+              refresh={async () => { }}
             />
 
-            <SummaryTable title="Top Customers" href="#" data={topCustomers} />
+            <SummaryTable title="Top Customers" href="#" data={topCustomersData || []} />
 
             <RevenueTrendChart />
 
@@ -71,16 +90,14 @@ export default function Home() {
             <DisplayTable
               title="Products Summary"
               columns={summaryColumns}
-              data={results[0].data.results.slice(0, summaryCount)}
-              count={summaryCount}
+              data={productsData?.results || []} // Reusing products list for now as 'Products Summary'
+              count={productsData?.count || 0}
               showFooter={false}
               showSortBy={false}
-              refresh={async () => {
-                await results[0].refetch();
-              }}
+              refresh={async () => { }}
             />
 
-            <SummaryTable title="Recent Orders" href="#" data={recentOrders} />
+            <SummaryTable title="Recent Orders" href="#" data={ordersData?.results || []} />
           </div>
         )}
       </div>

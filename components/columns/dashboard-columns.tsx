@@ -40,7 +40,7 @@ export const useTopProductsColums = (): ColumnDef<Product>[] => {
       header: "Price",
       cell: ({ row }) => (
         <span className="font-semibold">
-          {row.original.currency.symbol + " " + row.getValue("price")}
+          {(row.original.currency?.symbol || "₦") + " " + row.getValue("price")}
         </span>
       ),
     },
@@ -87,7 +87,7 @@ export const useSummaryColumns = (): ColumnDef<Product>[] => {
       header: "Revenue",
       cell: ({ row }) => (
         <p className="font-semibold">
-          {row.original.currency.symbol}{" "}
+          {row.original.currency?.symbol || "₦"}{" "}
           {row.original.price * row.original.stock_quantity}
         </p>
       ),
@@ -97,7 +97,7 @@ export const useSummaryColumns = (): ColumnDef<Product>[] => {
       header: "Avg. Price",
       cell: ({ row }) => (
         <span className="font-semibold">
-          {row.original.currency.symbol + " " + row.getValue("price")}
+          {(row.original.currency?.symbol || "₦") + " " + row.getValue("price")}
         </span>
       ),
     },

@@ -6,12 +6,14 @@ import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { UserPopover } from "../dialogs/user";
 import { Notifications } from "../dialogs/notifications";
 
-export const Navbar = ({ user }: { user: any }) => {
+// I will update app/(routes)/layout.tsx next. 
+// For now, I'll update Header to accept the prop.
+export const Navbar = ({ user, lowStockCount = 0 }: { user: any, lowStockCount?: number }) => {
   return (
     <header className="flex flex-row justify-end md:justify-between items-center border-b border-border px-8 h-24">
       <p className="hidden md:block">
         Hello {user?.full_name || user?.email || "Admin"}, you have{" "}
-        <span className="bg-secondary-one-100 rounded-sm p-1">23</span> products
+        <span className="bg-secondary-one-100 rounded-sm p-1">{lowStockCount}</span> products
         almost out of stock.
       </p>
       <div className="flex flex-row items-center gap-4 rounded-sm">

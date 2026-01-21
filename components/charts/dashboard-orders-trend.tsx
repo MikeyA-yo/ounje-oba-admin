@@ -1,4 +1,4 @@
-import { ordersTrend } from "@/data/home";
+// import { ordersTrend } from "@/data/home";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import {
   Cell,
@@ -8,8 +8,10 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
-export default function OrdersTrendChart() {
-  const totalAmount = ordersTrend.reduce((prev, curr) => prev + curr.amount, 0);
+export default function OrdersTrendChart({ data }: { data?: any[] }) {
+  // Fallback to empty array if data is undefined to prevent reduce error
+  const safeData = data || [];
+  const totalAmount = safeData.reduce((prev: number, curr: any) => prev + (curr.amount || 0), 0);
   const COLORS = ["#24A148", "#F1C21B", "#1D55CE"];
 
   return (
@@ -22,7 +24,7 @@ export default function OrdersTrendChart() {
         </div>
       </div>
       <ResponsiveContainer width={"100%"} height={350} className="mt-6">
-        <PieChart data={ordersTrend}>
+        <PieChart data={safeData}>
           <Pie
             isAnimationActive={false}
             dataKey={"amount"}
@@ -55,7 +57,7 @@ export default function OrdersTrendChart() {
               );
             }}
           >
-            {ordersTrend.map((_, index) => (
+            {safeData.map((_: any, index: number) => (
               <Cell key={`cell-${index}`} fill={COLORS[index]} />
             ))}
             <Legend
@@ -76,7 +78,7 @@ export default function OrdersTrendChart() {
                         <span className="caption">
                           {item.value}
                           <br />
-                          {ordersTrend[index].amount}
+                          {safeData[index]?.amount}
                         </span>
                       </div>
                     ))}

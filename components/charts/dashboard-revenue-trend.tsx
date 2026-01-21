@@ -11,7 +11,7 @@ import {
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { revenueTrend } from "@/data/home";
 
-export default function RevenueTrendChart() {
+export default function RevenueTrendChart({ data }: { data?: any[] }) {
   return (
     <div className="border rounded-lg p-4">
       <div className="flex justify-between items-center gap-2">
@@ -25,7 +25,7 @@ export default function RevenueTrendChart() {
       </div>
       <ResponsiveContainer width={"100%"} height={350} className="mt-6">
         <LineChart
-          data={revenueTrend}
+          data={data || revenueTrend}
           margin={{ top: 30, left: 10, bottom: 15 }}
         >
           <CartesianGrid vertical={false} stroke="#F3F3F3" />

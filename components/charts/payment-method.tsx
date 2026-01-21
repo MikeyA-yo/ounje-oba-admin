@@ -1,4 +1,4 @@
-import { paymentMethod } from "@/data/reports";
+// import { paymentMethod } from "@/data/reports";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import {
   Cell,
@@ -9,7 +9,7 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
-export default function PaymentMethodChart() {
+export default function PaymentMethodChart({ data }: { data: any[] }) {
   const RADIAN = Math.PI / 180;
   const COLORS = [
     "#5C1978",
@@ -30,7 +30,7 @@ export default function PaymentMethodChart() {
         </div>
       </div>
       <ResponsiveContainer width={"100%"} height={350} className="mt-6">
-        <PieChart data={paymentMethod}>
+        <PieChart data={data}>
           <Pie
             isAnimationActive={false}
             dataKey={"percentage"}
@@ -65,7 +65,7 @@ export default function PaymentMethodChart() {
               );
             }}
           >
-            {paymentMethod.map((_, index) => (
+            {data.map((_, index) => (
               <Cell key={`cell-${index}`} fill={COLORS[index]} />
             ))}
             <Legend
@@ -83,7 +83,7 @@ export default function PaymentMethodChart() {
                           className="size-2 rounded-full"
                         />
                         <span className="caption">
-                          {paymentMethod[index].method}
+                          {data[index].method}
                         </span>
                       </div>
                     ))}

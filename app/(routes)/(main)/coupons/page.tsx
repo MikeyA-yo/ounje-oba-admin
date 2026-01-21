@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { getCoupons } from "@/app/admin/marketing/actions";
+import { getCoupons, getCouponStats } from "@/app/admin/marketing/actions";
 import { CouponCards } from "@/components/cards/coupons";
 import CouponPerformanceChart from "@/components/charts/coupon-performance";
 // import api from "@/lib/api";
@@ -28,10 +28,21 @@ export default function Coupon() {
     },
   });
 
+  const { data: statsData, isLoading: isLoadingStats } = useQuery({
+    queryKey: ["coupon-stats"],
+    queryFn: async () => await getCouponStats(),
+  });
+
   return (
     <section className="mt-6">
       <div className="space-y-6">
-        <CouponCards />
+        {isLoadingStats || !statsData ? (
+          <div className="space-y-4">
+            <Skeleton className="h-32 w-full" />
+          </div>
+        ) : (
+          <CouponCards stats={statsData.stats} />
+        )}
 
         {isLoading || !data ? (
           <div className="space-y-4">
@@ -56,8 +67,8 @@ export default function Coupon() {
                 await refetch();
               }}
             />
-            <CouponPerformanceChart />
-          </>
+            <CouponPerformanceChart data={statsData?.chartData || []} />
+          </> // Added optional chaining backup if statsData isn't loaded yet, though parent check exists.
         )}
       </div>
     </section>

@@ -1,4 +1,4 @@
-import { customerGrowth } from "@/data/reports";
+// import { customerGrowth } from "@/data/reports";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import {
   CartesianGrid,
@@ -11,7 +11,7 @@ import {
   YAxis,
 } from "recharts";
 
-export default function CustomerGrowth() {
+export default function CustomerGrowth({ data }: { data: any[] }) {
   return (
     <div className="border rounded-lg p-4">
       <div className="flex justify-between items-center gap-2">
@@ -25,7 +25,7 @@ export default function CustomerGrowth() {
       </div>
       <ResponsiveContainer width={"100%"} height={350} className="mt-6">
         <LineChart
-          data={customerGrowth}
+          data={data}
           margin={{ top: 30, left: 10, bottom: 15 }}
         >
           <Tooltip

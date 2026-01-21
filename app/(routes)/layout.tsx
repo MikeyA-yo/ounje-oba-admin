@@ -2,6 +2,7 @@ import { Navbar } from "@/components/layout/header";
 import { AppSidebar } from "@/components/layout/sidebar";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { createClient } from "@/utils/supabase/server";
+import { getLowStockCount } from "@/app/admin/analytics/actions";
 import { redirect } from "next/navigation";
 
 export default async function RoutesLayout({
@@ -25,12 +26,14 @@ export default async function RoutesLayout({
     .select("*")
     .eq("id", user.id)
     .single();
+  // Fetch low stock count
+  const lowStockCount = await getLowStockCount();
 
   return (
     <SidebarProvider>
       <AppSidebar />
       <div className="@container/main w-full h-full pb-12">
-        <Navbar user={profile || user} />
+        <Navbar user={profile || user} lowStockCount={lowStockCount} />
         {children}
       </div>
     </SidebarProvider>
