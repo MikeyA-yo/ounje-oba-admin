@@ -1,9 +1,10 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
+import { getOrders } from "@/app/admin/orders/actions";
 import { OrderCards } from "@/components/cards/orders";
-import api from "@/lib/api";
-import { orderManagement } from "@/lib/routes";
+// import api from "@/lib/api";
+// import { orderManagement } from "@/lib/routes";
 import { Skeleton } from "@/components/ui/skeleton";
 import DisplayTable from "@/components/elements/display-table";
 import { useState } from "react";
@@ -12,15 +13,15 @@ export default function Orders() {
   const columns = useOrderColumns();
   const [pageSize /*, setPageSize */] = useState(10);
   const [page /*,  setPage */] = useState(1);
-  const [url /*,  setUrl */] = useState(
-    orderManagement + `?page_size=${pageSize}` + `&page=${page}`,
-  );
   const { data, isLoading, refetch } = useQuery({
-    queryKey: ["orders"],
+    queryKey: ["orders", page],
     queryFn: async () => {
-      const response = await api.get(url);
-
-      return response.data;
+      const { results, count } = await getOrders({
+        page,
+        pageSize,
+        search: "",
+      });
+      return { results, count };
     },
   });
 

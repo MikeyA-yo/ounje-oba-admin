@@ -1,8 +1,7 @@
 "use client";
 
-import api from "@/lib/api";
+import { getProducts } from "@/app/admin/products/actions";
 import { ProductsCards } from "@/components/cards/products";
-import { products } from "@/lib/routes";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { useProductColumns } from "@/components/columns/products-columns";
 import DisplayTable from "@/components/elements/display-table";
@@ -11,17 +10,17 @@ import { Skeleton } from "@/components/ui/skeleton";
 export default function Products() {
   const [pageSize /* , setPageSize */] = useState(10);
   const [page /* , setPage */] = useState(1);
-  const [url /* , setUrl */] = useState(
-    products + `?page_size=${pageSize}` + `&page=${page}`,
-  );
   const columns = useProductColumns();
 
   const { data, isLoading, refetch } = useQuery({
     queryKey: ["products", page],
     queryFn: async () => {
-      const response = await api.get(url);
-
-      return response.data;
+      const { results, count } = await getProducts({
+        page,
+        pageSize,
+        search: "", // You could add search state here later
+      });
+      return { results, count };
     },
     placeholderData: keepPreviousData,
   });

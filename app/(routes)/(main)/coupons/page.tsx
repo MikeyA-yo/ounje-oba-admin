@@ -1,10 +1,11 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
+import { getCoupons } from "@/app/admin/marketing/actions";
 import { CouponCards } from "@/components/cards/coupons";
 import CouponPerformanceChart from "@/components/charts/coupon-performance";
-import api from "@/lib/api";
-import { coupons } from "@/lib/routes";
+// import api from "@/lib/api";
+// import { coupons } from "@/lib/routes";
 import { useState } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useCouponsColumns } from "@/components/columns/coupons-columns";
@@ -14,16 +15,16 @@ export default function Coupon() {
   const columns = useCouponsColumns();
   const [pageSize /*, setPageSize */] = useState(10);
   const [page /*, setPage */] = useState(1);
-  const [url /*, setUrl */] = useState(
-    coupons + `?page_size=${pageSize}` + `&page=${page}`,
-  );
 
   const { data, isLoading, refetch } = useQuery({
-    queryKey: ["coupons"],
+    queryKey: ["coupons", page],
     queryFn: async () => {
-      const response = await api.get(url);
-
-      return response.data;
+      const { results, count } = await getCoupons({
+        page,
+        pageSize,
+        search: "",
+      });
+      return { results, count };
     },
   });
 

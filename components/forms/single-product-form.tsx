@@ -28,8 +28,7 @@ import { useState } from "react";
 import { Icon } from "@iconify/react";
 import AddVariationForm from "./add-variation-form";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import api from "@/lib/api";
-import { categories as getCategories, products } from "@/lib/routes";
+import { createProduct, getCategories } from "@/app/admin/products/actions";
 import { ProductCategory } from "@/types/product";
 import { useDropzone } from "react-dropzone";
 import Image from "next/image";
@@ -60,9 +59,8 @@ export default function SingleProductForm() {
   const { data: categories } = useQuery({
     queryKey: ["categories"],
     queryFn: async () => {
-      const response = await api.get(getCategories);
-
-      return response.data.results as ProductCategory[];
+      const data = await getCategories();
+      return data as ProductCategory[];
     },
   });
 
@@ -70,22 +68,34 @@ export default function SingleProductForm() {
     mutationFn: async () => {
       const formdata = new FormData();
 
+      // Append all form fields
       Object.entries(form.getValues()).forEach(([key, value]) => {
-        if (key == "image_files") {
+        if (key === "image_files" && value instanceof FileList) {
           for (let i = 0; i < value.length; i++) {
             formdata.append(key, value[i]);
           }
-        } else {
+        } else if (Array.isArray(value)) {
+          // Handle array values if any (though currently image_files is the main one)
+          // If image_files is an array of Files from Dropzone (not FileList)
+          value.forEach(v => formdata.append(key, v));
+        } else if (value !== undefined && value !== null) {
           formdata.append(key, value.toString());
         }
       });
-      const response = await api.post(products, formdata, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
+
+      // Specifically handle the files state from Dropzone if it's not in the form values correctly
+      // The current code puts DataTransfer.files into "image_files", which is a FileList.
+      // But standard react-hook-form + dropzone might be managing it differently.
+      // Let's ensure we are appending files correctly.
+
+      // Re-appending to be safe if `form.getValues` didn't catch them seamlessly or if we want to rely on the `files` state
+      // clear previous image_files to avoid duplicates if we re-add
+      formdata.delete("image_files");
+      files.forEach((file) => {
+        formdata.append("image_files", file);
       });
 
-      return response.data;
+      return await createProduct(formdata);
     },
   });
 
@@ -292,7 +302,7 @@ export default function SingleProductForm() {
                       {...getRootProps()}
                       className={cn(
                         isDragAccept &&
-                          "border border-dashed border-primary rounded-lg",
+                        "border border-dashed border-primary rounded-lg",
                       )}
                     >
                       <FormControl>

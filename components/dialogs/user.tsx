@@ -1,3 +1,5 @@
+"use client";
+
 import { Button } from "../ui/button";
 import { Icon } from "@iconify/react";
 import { Avatar, AvatarFallback } from "../ui/avatar";

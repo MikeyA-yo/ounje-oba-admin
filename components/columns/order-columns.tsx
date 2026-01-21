@@ -22,7 +22,7 @@ export const useOrderColumns = (): ColumnDef<Order>[] => {
       id: "items",
       header: "Items",
       cell: ({ row }) => {
-        const items = row.original.items.map((item) => item.product_name);
+        const items = row.original.items?.map((item) => item.product_name) || [];
 
         return (
           <p className="max-w-32">
@@ -86,7 +86,7 @@ export const useOrderColumns = (): ColumnDef<Order>[] => {
     {
       id: "actions",
       header: "Actions",
-      cell: ({}) => {
+      cell: ({ }) => {
         // const orderId = row.original.id;
 
         return <Button variant={"ghost"}>View</Button>;
