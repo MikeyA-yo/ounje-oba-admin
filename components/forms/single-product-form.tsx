@@ -33,6 +33,7 @@ import { ProductCategory } from "@/types/product";
 import { useDropzone } from "react-dropzone";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 
 export default function SingleProductForm() {
   const [showVariationForm, setShowVariationForm] = useState(false);
@@ -96,6 +97,15 @@ export default function SingleProductForm() {
       });
 
       return await createProduct(formdata);
+    },
+    onSuccess: () => {
+      toast.success("Product created successfully");
+      form.reset();
+      setFiles([]);
+      setPreviews([]);
+    },
+    onError: (error) => {
+      toast.error(error.message || "Failed to create product");
     },
   });
 

@@ -51,7 +51,7 @@ export const useProductColumns = (): ColumnDef<Product>[] => {
       header: "Price",
       cell: ({ row }) => (
         <span className="font-semibold">
-          {row.original.currency.symbol + " " + row.getValue("price")}
+          {(row.original.currency?.symbol || "₦") + " " + row.getValue("price")}
         </span>
       ),
     },

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Albert_Sans } from "next/font/google";
 import "./globals.css";
 import QueryProvider from "@/providers/query-provider";
+import { Toaster } from "sonner";
 
 const albert = Albert_Sans({
   subsets: ["latin"],
@@ -22,6 +23,7 @@ export default function RootLayout({
       <body className={`${albert.className} body-2`}>
         <QueryProvider>
           <main>{children}</main>
+          <Toaster />
         </QueryProvider>
       </body>
     </html>

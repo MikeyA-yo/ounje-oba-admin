@@ -24,10 +24,13 @@ export const singleProductSchema = z
       .optional(),
     loyalty: z.enum(["yes", "no"], { error: "This field is required" }),
   })
-  .refine((data) => data.stock_quantity === data.low_stock_alert, {
-    message: "Stock Quantity must be greater than Low Stock Alert",
-    path: ["low_stock_alert"],
-  });
+  .refine(
+    (data) => Number(data.stock_quantity) > Number(data.low_stock_alert),
+    {
+      message: "Stock Quantity must be greater than Low Stock Alert",
+      path: ["low_stock_alert"],
+    },
+  );
 
 export const variationSchema = z.object({
   variations: z
