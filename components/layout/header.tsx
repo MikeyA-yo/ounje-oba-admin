@@ -6,11 +6,11 @@ import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { UserPopover } from "../dialogs/user";
 import { Notifications } from "../dialogs/notifications";
 
-export const Navbar = () => {
+export const Navbar = ({ user }: { user: any }) => {
   return (
     <header className="flex flex-row justify-end md:justify-between items-center border-b border-border px-8 h-24">
       <p className="hidden md:block">
-        Hello Ralph, you have{" "}
+        Hello {user?.full_name || user?.email || "Admin"}, you have{" "}
         <span className="bg-secondary-one-100 rounded-sm p-1">23</span> products
         almost out of stock.
       </p>
@@ -36,17 +36,17 @@ export const Navbar = () => {
             >
               <Avatar>
                 <AvatarFallback className="bg-[#777] text-white">
-                  RE
+                  {user?.full_name?.[0] || user?.email?.[0] || "A"}
                 </AvatarFallback>
               </Avatar>
               <div className="hidden md:flex flex-row flex-nowrap items-center gap-2">
-                <p>Ralph Edwards</p>
+                <p>{user?.full_name || user?.email || "Admin"}</p>
                 <Icon icon="hugeicons:arrow-down-01" />
               </div>
             </Button>
           </PopoverTrigger>
           <PopoverContent className="p-0 mr-4">
-            <UserPopover />
+            <UserPopover user={user} />
           </PopoverContent>
         </Popover>
       </div>

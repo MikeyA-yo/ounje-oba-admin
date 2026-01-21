@@ -12,10 +12,11 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "../ui/alert-dialog";
-import { useAuthStore } from "@/store/auth-store";
 import Link from "next/link";
+import { signout } from "@/app/auth/actions";
+import { User } from "@supabase/supabase-js"; // Or define a looser type
 
-export const UserPopover = () => {
+export const UserPopover = ({ user }: { user: any }) => {
   return (
     <div className="w-full">
       {/* User Profile Header */}
@@ -24,13 +25,13 @@ export const UserPopover = () => {
           <div>
             <Avatar>
               <AvatarFallback className="bg-[#777] text-white">
-                RE
+                {user?.full_name?.[0] || user?.email?.[0] || "A"}
               </AvatarFallback>
             </Avatar>
           </div>
           <div>
             <h3 className="text-lg font-semibold text-black mb-2">
-              Ralph Edwards
+              {user?.full_name || user?.email || "Admin"}
             </h3>
             <p className="caption text-grey-900">Admin</p>
           </div>
@@ -97,7 +98,6 @@ export const UserPopover = () => {
 };
 
 function LogoutDialog({ children }: { children: React.ReactNode }) {
-  const logout = useAuthStore((state) => state.logout);
   return (
     <AlertDialog>
       <AlertDialogTrigger className="w-full" asChild>
@@ -114,7 +114,7 @@ function LogoutDialog({ children }: { children: React.ReactNode }) {
         </AlertDialogHeader>
         <AlertDialogFooter className="flex gap-3 mt-6">
           <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction onClick={logout}>Log Out</AlertDialogAction>
+          <AlertDialogAction onClick={() => signout()}>Log Out</AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>

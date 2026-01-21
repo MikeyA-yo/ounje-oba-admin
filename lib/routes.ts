@@ -1,8 +1,8 @@
-export const login = "/auth/login/";
+export const login = "/login/";
 
-export const refresh = "/auth/refresh-token/";
+export const refresh = "/auth/refresh-token/"; // This might still be used by old code, keep or irrelevant
 
-export const logout = "/auth/logout/";
+export const logout = "/logout/"; // Or handled by action now
 
 export const products = "/admin/products/";
 

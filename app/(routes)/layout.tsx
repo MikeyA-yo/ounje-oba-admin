@@ -1,48 +1,36 @@
-"use client";
-
 import { Navbar } from "@/components/layout/header";
 import { AppSidebar } from "@/components/layout/sidebar";
 import { SidebarProvider } from "@/components/ui/sidebar";
-import { useAuthStore } from "@/store/auth-store";
-import { Loader2 } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { createClient } from "@/utils/supabase/server";
+import { redirect } from "next/navigation";
 
-export default function RoutesLayout({
+export default async function RoutesLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
-  const [hasMounted, setHasMounted] = useState(false);
-  const hydrated = useAuthStore((state) => state.hydrated);
-  const router = useRouter();
+  const supabase = await createClient();
 
-  useEffect(() => {
-    setHasMounted(true);
-  }, []);
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
-  useEffect(() => {
-    if (hydrated && !isAuthenticated) {
-      router.replace("/login");
-    }
-  }, [isAuthenticated, hydrated, router]);
-
-  if (!hasMounted) return null;
-
-  if (!hydrated && !isAuthenticated) {
-    return (
-      <div className="flex items-center justify-center h-screen">
-        <Loader2 color="#00B894" />
-      </div>
-    );
+  if (!user) {
+    redirect("/auth/login");
   }
+
+  // Fetch profile
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("*")
+    .eq("id", user.id)
+    .single();
 
   return (
     <SidebarProvider>
       <AppSidebar />
       <div className="@container/main w-full h-full pb-12">
-        <Navbar />
+        <Navbar user={profile || user} />
         {children}
       </div>
     </SidebarProvider>

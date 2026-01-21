@@ -4,6 +4,7 @@ import type React from "react";
 
 import { useState } from "react";
 import Link from "next/link";
+import { signup } from "@/app/auth/actions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -18,24 +19,17 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 
 export default function SignupForm() {
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
-  });
   const [agreeToTerms, setAgreeToTerms] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (formData.password !== formData.confirmPassword) {
+    const formData = new FormData(e.currentTarget);
+    const password = formData.get("password") as string;
+    const confirmPassword = formData.get("confirmPassword") as string;
+
+    if (password !== confirmPassword) {
       alert("Passwords don't match!");
       return;
     }
@@ -46,11 +40,7 @@ export default function SignupForm() {
     }
 
     setIsLoading(true);
-
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-
-    console.log("Signup attempt:", formData);
+    await signup(formData);
     setIsLoading(false);
   };
 
@@ -68,14 +58,12 @@ export default function SignupForm() {
         <form onSubmit={handleSubmit}>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="name">Full Name</Label>
+              <Label htmlFor="full_name">Full Name</Label>
               <Input
-                id="name"
-                name="name"
+                id="full_name"
+                name="full_name"
                 type="text"
                 placeholder="Enter your full name"
-                value={formData.name}
-                onChange={handleInputChange}
                 required
               />
             </div>
@@ -86,8 +74,6 @@ export default function SignupForm() {
                 name="email"
                 type="email"
                 placeholder="Enter your email"
-                value={formData.email}
-                onChange={handleInputChange}
                 required
               />
             </div>
@@ -98,8 +84,6 @@ export default function SignupForm() {
                 name="password"
                 type="password"
                 placeholder="Create a password"
-                value={formData.password}
-                onChange={handleInputChange}
                 required
               />
             </div>
@@ -110,8 +94,6 @@ export default function SignupForm() {
                 name="confirmPassword"
                 type="password"
                 placeholder="Confirm your password"
-                value={formData.confirmPassword}
-                onChange={handleInputChange}
                 required
               />
             </div>

@@ -15,29 +15,32 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { useAuthStore } from "@/store/auth-store";
 import { useRouter } from "next/navigation";
+import { login } from "@/app/auth/actions";
 
 export default function LoginForm() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
-  const login = useAuthStore((state) => state.login);
-  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
-
   useEffect(() => {
-    if (isAuthenticated) {
-      router.push("/");
+    // Check for error parameter in URL
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("error")) {
+      // You could use a toast here
+      alert(params.get("error"));
     }
-  }, [isAuthenticated, router]);
+  }, []);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsLoading(true);
 
-    login({ email, password });
+    const formData = new FormData(e.currentTarget);
+    await login(formData);
+
+    // If login is successful, the server action redirects.
+    // If it fails, we should handle it. 
+    // Ideally server action returns state, but for now simple redirect is used in action.
     setIsLoading(false);
   };
 
@@ -58,10 +61,9 @@ export default function LoginForm() {
               <Label htmlFor="email">Email</Label>
               <Input
                 id="email"
+                name="email"
                 type="email"
                 placeholder="Enter your email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
                 required
               />
             </div>
@@ -69,10 +71,9 @@ export default function LoginForm() {
               <Label htmlFor="password">Password</Label>
               <Input
                 id="password"
+                name="password"
                 type="password"
                 placeholder="Enter your password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
                 required
               />
             </div>
