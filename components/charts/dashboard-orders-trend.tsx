@@ -59,6 +59,7 @@ export default function OrdersTrendChart({ data }: { data?: any[] }) {
               );
             }}
           >
+            {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
             {safeData.map((_: any, index: number) => (
               <Cell key={`cell-${index}`} fill={COLORS[index]} />
             ))}
