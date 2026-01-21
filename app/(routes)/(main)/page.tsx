@@ -14,7 +14,6 @@ import OrdersTrendChart from "@/components/charts/dashboard-orders-trend";
 import { useQuery } from "@tanstack/react-query";
 import {
   getDashboardStats,
-  getRevenueData,
   getTopCustomers,
 } from "@/app/admin/analytics/actions";
 import { getProducts } from "@/app/admin/products/actions";

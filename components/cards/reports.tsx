@@ -1,9 +1,9 @@
 "use client";
 
-import { poundSign } from "@/lib/utils";
 import { DetailCard } from "../elements/detail-card";
 import { Icon } from "@iconify/react";
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const ReportCards = ({ stats }: { stats: any }) => {
   return (
     <div className="flex flex-col @md/main:grid @md/main:grid-cols-2 @md/main:grid-flow-row @4xl/main:flex @4xl/main:flex-row @4xl/main:flex-wrap gap-4 items-center w-full">

@@ -66,7 +66,7 @@ export async function getTransactions({
 
     // Map orders to transaction shape
     const results = data.map(order => {
-        const dateObj = new Date(order.created_at);
+        // const dateObj = new Date(order.created_at); // Unused
         return {
             transactionId: order.id.slice(0, 8).toUpperCase(), // Shorten ID for display
             customer: order.customer_name || "Unknown",
@@ -204,7 +204,7 @@ export async function getTransactionStats() {
 
 export async function getReportStats() {
     // Re-using logic from getDashboardStats but formatting for ReportCards
-    const { productsCount, ordersCount, usersCount, totalRevenue } = await getDashboardStats();
+    const { ordersCount, usersCount, totalRevenue } = await getDashboardStats();
 
     // Mock growth for now
     return {
@@ -267,7 +267,7 @@ export async function getOrdersStatusStats() {
     const { data: orders } = await supabase.from("orders").select("status");
 
     const stats: Record<string, number> = {};
-    const total = orders?.length || 0;
+    // const total = orders?.length || 0; // Unused
 
     orders?.forEach(o => {
         const status = o.status || "Unknown";

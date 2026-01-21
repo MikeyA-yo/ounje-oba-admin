@@ -75,7 +75,7 @@ export async function createProduct(formData: FormData) {
     for (const file of imageFiles) {
         if (file instanceof File && file.size > 0) {
             const fileName = `${Date.now()}-${file.name.replaceAll(" ", "_")}`;
-            const { data, error } = await supabase.storage
+            const { error } = await supabase.storage
                 .from("products") // Ensure this bucket exists
                 .upload(fileName, file);
 

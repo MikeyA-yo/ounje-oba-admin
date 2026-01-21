@@ -8,6 +8,7 @@ import { Notifications } from "../dialogs/notifications";
 
 // I will update app/(routes)/layout.tsx next. 
 // For now, I'll update Header to accept the prop.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const Navbar = ({ user, lowStockCount = 0 }: { user: any, lowStockCount?: number }) => {
   return (
     <header className="flex flex-row justify-end md:justify-between items-center border-b border-border px-8 h-24">

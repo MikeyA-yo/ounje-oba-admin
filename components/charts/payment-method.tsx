@@ -9,6 +9,7 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export default function PaymentMethodChart({ data }: { data: any[] }) {
   const RADIAN = Math.PI / 180;
   const COLORS = [

@@ -20,7 +20,7 @@ import { login } from "@/app/auth/actions";
 
 export default function LoginForm() {
   const [isLoading, setIsLoading] = useState(false);
-  const router = useRouter();
+  // const router = useRouter();
 
   useEffect(() => {
     // Check for error parameter in URL

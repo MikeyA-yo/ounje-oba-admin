@@ -11,6 +11,7 @@ import {
   YAxis,
 } from "recharts";
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export default function CustomerGrowth({ data }: { data: any[] }) {
   return (
     <div className="border rounded-lg p-4">

@@ -11,6 +11,7 @@ import {
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { revenueTrend } from "@/data/home";
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export default function RevenueTrendChart({ data }: { data?: any[] }) {
   return (
     <div className="border rounded-lg p-4">

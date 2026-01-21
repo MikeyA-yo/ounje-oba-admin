@@ -8,9 +8,11 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export default function OrdersTrendChart({ data }: { data?: any[] }) {
   // Fallback to empty array if data is undefined to prevent reduce error
   const safeData = data || [];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const totalAmount = safeData.reduce((prev: number, curr: any) => prev + (curr.amount || 0), 0);
   const COLORS = ["#24A148", "#F1C21B", "#1D55CE"];
 

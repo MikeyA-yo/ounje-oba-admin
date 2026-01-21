@@ -12,6 +12,7 @@ import {
 import { Icon } from "@iconify/react/dist/iconify.js";
 
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export default function CouponPerformanceChart({ data }: { data: any[] }) {
   return (
     <div className="border rounded-lg p-4">

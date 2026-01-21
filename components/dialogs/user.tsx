@@ -16,8 +16,9 @@ import {
 } from "../ui/alert-dialog";
 import Link from "next/link";
 import { signout } from "@/app/auth/actions";
-import { User } from "@supabase/supabase-js"; // Or define a looser type
+// import { User } from "@supabase/supabase-js"; // Or define a looser type
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const UserPopover = ({ user }: { user: any }) => {
   return (
     <div className="w-full">

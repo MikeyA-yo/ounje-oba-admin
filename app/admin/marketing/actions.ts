@@ -51,7 +51,7 @@ export async function getCustomers({
     const from = (page - 1) * pageSize;
     const to = from + pageSize - 1;
 
-    let query = supabase
+    const query = supabase
         .from("profiles") // Assuming customers are strictly in profiles for now
         .select("*", { count: "exact" })
         .range(from, to)

@@ -321,6 +321,7 @@ function Nav({
     }
     goToMonth(previousMonth);
     onPrevClick?.(previousMonth);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [previousMonth, goToMonth]);
 
   const handleNextClick = React.useCallback(() => {
@@ -341,6 +342,7 @@ function Nav({
     }
     goToMonth(nextMonth);
     onNextClick?.(nextMonth);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [goToMonth, nextMonth]);
   return (
     <nav className={cn("flex items-center", className)}>

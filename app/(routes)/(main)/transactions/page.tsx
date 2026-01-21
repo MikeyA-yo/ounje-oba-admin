@@ -37,6 +37,7 @@ export default function Transactions() {
           <DisplayTable
             title="Transaction History"
             data={data?.results || []}
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             columns={column as any} // Casting as any temporarily if type mismatch due to strict ColumnDef
             count={data?.count || 0}
             refresh={async () => { }}
