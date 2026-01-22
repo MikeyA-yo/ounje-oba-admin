@@ -11,18 +11,26 @@ import {
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { revenueTrend } from "@/data/home";
 
+import { DatePickerWithRange } from "../ui/date-range-picker";
+import { DateRange } from "react-day-picker";
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export default function RevenueTrendChart({ data }: { data?: any[] }) {
+export default function RevenueTrendChart({
+  data,
+  date,
+  setDate
+}: {
+  data?: any[];
+  date?: DateRange;
+  setDate?: (date: DateRange | undefined) => void;
+}) {
   return (
     <div className="border rounded-lg p-4">
-      <div className="flex justify-between items-center gap-2">
+      <div className="flex justify-between items-center gap-2 flex-wrap">
         <h2 className="h6-medium">Revenue Trend</h2>
-        <div className="flex items-center gap-2 font-medium border border-[#8D8D8D] rounded-lg px-2 py-1">
-          <Icon icon={"hugeicons:calendar-03"} />
-          <p>
-            1-May, 2025 <span className="text-grey-700">to</span> 30-May, 2025
-          </p>
-        </div>
+        {date && setDate && (
+          <DatePickerWithRange date={date} setDate={setDate} />
+        )}
       </div>
       <ResponsiveContainer width={"100%"} height={350} className="mt-6">
         <LineChart
@@ -59,11 +67,12 @@ export default function RevenueTrendChart({ data }: { data?: any[] }) {
             tickLine={false}
             axisLine={false}
             fontSize={"14px"}
-            label={{
-              value: "May, 2025",
-              position: "bottom",
-              offset: 0,
-            }}
+            // Remove static label for month since we have the picker
+            // label={{
+            //   value: "May, 2025",
+            //   position: "bottom",
+            //   offset: 0,
+            // }}
             interval={1}
           />
           <Line

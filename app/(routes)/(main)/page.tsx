@@ -1,40 +1,72 @@
-
 "use client";
 
-import { HomeCards } from "@/components/cards/home";
-import DisplayTable from "@/components/elements/display-table";
-import {
-  useSummaryColumns,
-  useTopProductsColums,
-} from "@/components/columns/dashboard-columns";
-import { SummaryTable } from "@/components/elements/summary-table";
-// import { topCustomers } from "@/data/home"; // Keeping topCustomers mock for now as we don't have a good metric yet
-import RevenueTrendChart from "@/components/charts/dashboard-revenue-trend";
-import OrdersTrendChart from "@/components/charts/dashboard-orders-trend";
-import { useQuery } from "@tanstack/react-query";
 import {
   getDashboardStats,
   getTopCustomers,
+  getRevenueData,
 } from "@/app/admin/analytics/actions";
 import { getProducts } from "@/app/admin/products/actions";
 import { getOrders } from "@/app/admin/orders/actions";
+// import { DisplayTable, HomeCards, SummaryTable } from "@/components";
+import {
+  useTopProductsColums,
+  useSummaryColumns,
+} from "@/components/columns/dashboard-columns";
+// import { OrdersTrendChart, RevenueTrendChart } from "@/components/charts";
+import { useQuery } from "@tanstack/react-query";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useSearchParams, useRouter, usePathname } from "next/navigation";
+import { startOfMonth, endOfMonth } from "date-fns";
+import { DateRange } from "react-day-picker";
+import { useState } from "react";
+import { DisplayTable, HomeCards, SummaryTable } from "@/components/index";
+import { OrdersTrendChart, RevenueTrendChart } from "@/components/charts";
 
 export default function Home() {
-  const topSellingColumns = useTopProductsColums();
-  const topSellingCount = 6;
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
 
+  const [date, setDate] = useState<DateRange | undefined>({
+    from: startOfMonth(new Date()),
+    to: endOfMonth(new Date()),
+  });
+
+  const page = Number(searchParams.get("page")) || 1;
+  const pageSize = Number(searchParams.get("limit")) || 6;
+
+  const topSellingColumns = useTopProductsColums();
   const summaryColumns = useSummaryColumns();
   const summaryCount = 8;
+
+  const createQueryString = (name: string, value: string) => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set(name, value);
+    return params.toString();
+  };
+
+  const onPageChange = (newPage: number) => {
+    router.push(`${pathname}?${createQueryString("page", (newPage + 1).toString())}`, { scroll: false });
+  };
 
   const { data: stats, isLoading: isLoadingStats } = useQuery({
     queryKey: ["dashboard-stats"],
     queryFn: async () => await getDashboardStats(),
   });
 
+  const { data: topSellingData, isLoading: isLoadingTopSelling } = useQuery({
+    queryKey: ["dashboard-top-selling"],
+    queryFn: async () => await getProducts({ page: 1, pageSize: 6 }),
+  });
+
   const { data: productsData, isLoading: isLoadingProducts } = useQuery({
-    queryKey: ["dashboard-products"],
-    queryFn: async () => await getProducts({ page: 1, pageSize: topSellingCount }),
+    queryKey: ["dashboard-products", page, pageSize],
+    queryFn: async () => await getProducts({ page, pageSize }),
+  });
+
+  const { data: revenueData } = useQuery({
+    queryKey: ["revenue-data", date?.from, date?.to],
+    queryFn: async () => await getRevenueData({ from: date?.from, to: date?.to }),
   });
 
   const { data: ordersData, isLoading: isLoadingOrders } = useQuery({
@@ -47,8 +79,7 @@ export default function Home() {
     queryFn: async () => await getTopCustomers(),
   });
 
-  // Re-use logic for loading state
-  const isLoading = isLoadingStats || isLoadingProducts || isLoadingOrders || isLoadingCustomers;
+  const isLoading = isLoadingStats || isLoadingProducts || isLoadingOrders || isLoadingCustomers || isLoadingTopSelling;
 
   return (
     <section className="mt-6">
@@ -73,8 +104,8 @@ export default function Home() {
             <DisplayTable
               title="Top Selling Products"
               columns={topSellingColumns}
-              data={productsData?.results || []}
-              count={productsData?.count || 0}
+              data={topSellingData?.results || []}
+              count={topSellingData?.count || 0}
               showFooter={false}
               showSortBy={false}
               refresh={async () => { }}
@@ -82,18 +113,26 @@ export default function Home() {
 
             <SummaryTable title="Top Customers" href="#" data={topCustomersData || []} />
 
-            <RevenueTrendChart />
+            <RevenueTrendChart
+              data={revenueData}
+              date={date}
+              setDate={setDate}
+            />
 
             <OrdersTrendChart />
 
             <DisplayTable
               title="Products Summary"
               columns={summaryColumns}
-              data={productsData?.results || []} // Reusing products list for now as 'Products Summary'
+              data={productsData?.results || []}
               count={productsData?.count || 0}
-              showFooter={false}
+              showFooter={true}
               showSortBy={false}
               refresh={async () => { }}
+              pageSize={pageSize}
+              pageIndex={page - 1}
+              manualPagination={true}
+              onPageChange={onPageChange}
             />
 
             <SummaryTable title="Recent Orders" href="#" data={ordersData?.results || []} />

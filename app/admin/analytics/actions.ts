@@ -215,9 +215,14 @@ export async function getReportStats() {
     };
 }
 
-export async function getRevenueData() {
+export async function getRevenueData({ from, to }: { from?: Date; to?: Date } = {}) {
     // Mock data for revenue trend
     // Real implementation would aggregate orders by date
+
+    // In a real app we would filter query by from/to
+    // const query = supabase.from('orders')...
+    // if (from) query.gte('created_at', from.toISOString())
+    // if (to) query.lte('created_at', to.toISOString())
 
     return [
         { day: "Mon", grossRevenue: Math.floor(Math.random() * 5000) + 1000, netRevenue: Math.floor(Math.random() * 4000) + 800 },

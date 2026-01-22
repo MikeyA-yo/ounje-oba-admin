@@ -47,6 +47,12 @@ export default function DisplayTable<TData, TValue>({
   wideRows = false,
   // setPageSize,
   refresh,
+  manualPagination = false,
+  onPageChange,
+  pageIndex = 0,
+  searchValue = "",
+  onSearchChange,
+  isSearching = false,
 }: {
   title: string;
   columns: ColumnDef<TData, TValue>[];
@@ -61,13 +67,24 @@ export default function DisplayTable<TData, TValue>({
   wideRows?: boolean;
   // setPageSize: (size: number) => void;
   refresh: () => Promise<void>;
+  manualPagination?: boolean;
+  onPageChange?: (page: number) => void;
+  pageIndex?: number;
+  searchValue?: string;
+  onSearchChange?: (value: string) => void;
+  isSearching?: boolean;
 }) {
   const [sortValue, setSortValue] = useState("");
   const [dateRange, setDateRange] = useState<DateRange | undefined>();
-  const [pagination, setPagination] = useState<PaginationState>({
+  const [internalPagination, setInternalPagination] = useState<PaginationState>({
     pageIndex: 0,
     pageSize: pageSize ?? count,
   });
+
+  const pagination = manualPagination
+    ? { pageIndex, pageSize: pageSize ?? 10 }
+    : internalPagination;
+
   // console.log(pageSize);
   const table = useReactTable({
     data,
@@ -76,7 +93,7 @@ export default function DisplayTable<TData, TValue>({
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
-    onPaginationChange: setPagination,
+    onPaginationChange: setInternalPagination,
     manualPagination: true,
     state: {
       pagination,
@@ -104,10 +121,16 @@ export default function DisplayTable<TData, TValue>({
               />
               <Input
                 placeholder="Search"
-                // value={searchTerm}
-                // onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 w-full  border-[#8D8D8D]"
+                value={searchValue}
+                onChange={(e) => onSearchChange?.(e.target.value)}
+                className="pl-10 w-full border-[#8D8D8D]"
               />
+              {isSearching && (
+                <Icon
+                  icon="hugeicons:loading-03"
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-[#525252] animate-spin"
+                />
+              )}
             </div>
           )}
         </div>
@@ -203,10 +226,16 @@ export default function DisplayTable<TData, TValue>({
               />
               <Input
                 placeholder="Search"
-                // value={searchTerm}
-                // onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 w-full  border-[#8D8D8D]"
+                value={searchValue}
+                onChange={(e) => onSearchChange?.(e.target.value)}
+                className="pl-10 w-full border-[#8D8D8D]"
               />
+              {isSearching && (
+                <Icon
+                  icon="hugeicons:loading-03"
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-[#525252] animate-spin"
+                />
+              )}
             </div>
           )}
         </div>
@@ -277,7 +306,7 @@ export default function DisplayTable<TData, TValue>({
                 console.log(whole, frac);
                 const newIndex = frac > 0 ? whole + 1 - 1 : whole - 1;
 
-                setPagination({ pageIndex: newIndex, pageSize: newSize });
+                setInternalPagination({ pageIndex: newIndex, pageSize: newSize });
               }}
             >
               <SelectTrigger className="w-fit h-8 border-none">
@@ -290,26 +319,27 @@ export default function DisplayTable<TData, TValue>({
               </SelectContent>
             </Select>
           </div>
-
-          <div className="flex-1 px-4">
-            <span className="text-sm">
-              {pagination.pageIndex * pagination.pageSize + 1} – {getLastIndex}{" "}
-              of {table.getRowCount()} items
-            </span>
-          </div>
-
-          <div className="flex items-center gap-4 py-1 border-l border-[#E0E0E0] pl-4">
-            <div className="flex items-center gap-2">
-              <span className="text-sm">
-                Page {pagination.pageIndex + 1} of {table.getPageCount()} pages
-              </span>
-
-              <div className="">
+          <div className="flex items-center">
+            <div className="border-r border-[#e0e0e0] h-full py-1 px-4 text-sm w-fit text-nowrap">
+              {pagination.pageIndex * pagination.pageSize + 1}-
+              {pagination.pageSize * (pagination.pageIndex + 1) < count
+                ? pagination.pageSize * (pagination.pageIndex + 1)
+                : count}{" "}
+              of {count} items
+            </div>
+            <div className="flex items-center">
+              <div className="flex items-center">
                 <Button
                   variant="ghost"
                   className="text-black h-8 w-8 border-l rounded-none border-[#e0e0e0]"
                   disabled={!table.getCanPreviousPage()}
-                  onClick={() => table.previousPage()}
+                  onClick={() => {
+                    if (manualPagination && onPageChange) {
+                      onPageChange(pagination.pageIndex - 1);
+                    } else {
+                      table.previousPage();
+                    }
+                  }}
                 >
                   <Icon icon="hugeicons:arrow-left-01" />
                 </Button>
@@ -317,7 +347,13 @@ export default function DisplayTable<TData, TValue>({
                   variant="ghost"
                   className="text-black h-8 w-8 border-l rounded-none border-[#e0e0e0]"
                   disabled={!table.getCanNextPage()}
-                  onClick={() => table.nextPage()}
+                  onClick={() => {
+                    if (manualPagination && onPageChange) {
+                      onPageChange(pagination.pageIndex + 1);
+                    } else {
+                      table.nextPage();
+                    }
+                  }}
                 >
                   <Icon icon="hugeicons:arrow-right-01" />
                 </Button>
