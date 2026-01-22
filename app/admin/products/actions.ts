@@ -120,16 +120,26 @@ export async function createProduct(formData: FormData) {
 
 export async function getProductStats() {
     const supabase = await createClient();
-    const { data: products } = await supabase.from("products").select("stock_quantity, low_stock_alert");
+    const { data: products, error } = await supabase.from("products").select("stock_quantity");
+
+    if (error) {
+        console.error("Error fetching product stats:", error);
+        return {
+            total_products: 0,
+            active_products: 0,
+            low_stock: 0,
+            out_of_stock: 0,
+        };
+    }
 
     const total_products = products?.length || 0;
     const out_of_stock = products?.filter(p => p.stock_quantity === 0).length || 0;
     // Assuming active means available/in-stock (stock > 0)
     const active_products = products?.filter(p => p.stock_quantity > 0).length || 0;
 
-    // Low stock: stock <= low_stock_alert OR stock <= 10 if alert not set
+    // Low stock: stock <= 10 (since low_stock_alert might not exist)
     const low_stock = products?.filter(p => {
-        const threshold = p.low_stock_alert || 10;
+        const threshold = 10;
         return p.stock_quantity > 0 && p.stock_quantity <= threshold;
     }).length || 0;
 
