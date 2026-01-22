@@ -8,7 +8,6 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import { Icon } from "@iconify/react/dist/iconify.js";
 import { revenueTrend } from "@/data/home";
 
 import { DatePickerWithRange } from "../ui/date-range-picker";
@@ -20,6 +19,7 @@ export default function RevenueTrendChart({
   date,
   setDate
 }: {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   data?: any[];
   date?: DateRange;
   setDate?: (date: DateRange | undefined) => void;

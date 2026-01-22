@@ -11,15 +11,17 @@ export default function Products() {
   const [pageSize /* , setPageSize */] = useState(10);
   const [page /* , setPage */] = useState(1);
   const [search, setSearch] = useState("");
+  const [sortBy, setSortBy] = useState("created_at");
   const columns = useProductColumns();
 
   const { data, isLoading, refetch } = useQuery({
-    queryKey: ["products", page, search],
+    queryKey: ["products", page, search, sortBy],
     queryFn: async () => {
       const { results, count } = await getProducts({
         page,
         pageSize,
         search,
+        sortBy,
       });
       return { results, count };
     },
@@ -47,9 +49,11 @@ export default function Products() {
             searchValue={search}
             onSearchChange={setSearch}
             sortOptions={[
+              { key: "created_at", value: "Date Created" },
               { key: "name", value: "Product Name" },
               { key: "price", value: "Price" },
             ]}
+            onSortChange={setSortBy}
             refresh={async () => {
               await refetch();
             }}

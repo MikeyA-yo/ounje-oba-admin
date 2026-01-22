@@ -7,10 +7,12 @@ export async function getProducts({
     page = 1,
     pageSize = 10,
     search = "",
+    sortBy = "created_at",
 }: {
     page?: number;
     pageSize?: number;
     search?: string;
+    sortBy?: string;
 }) {
     const supabase = await createClient();
     const from = (page - 1) * pageSize;
@@ -25,8 +27,15 @@ export async function getProducts({
     `,
             { count: "exact" }
         )
-        .range(from, to)
-        .order("created_at", { ascending: false });
+        .range(from, to);
+
+    if (sortBy === "price") {
+        query = query.order("price", { ascending: true });
+    } else if (sortBy === "name") {
+        query = query.order("name", { ascending: true });
+    } else {
+        query = query.order("created_at", { ascending: false });
+    }
 
     if (search) {
         query = query.ilike("name", `%${search}%`);

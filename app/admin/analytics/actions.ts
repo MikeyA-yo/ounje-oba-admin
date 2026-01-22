@@ -1,6 +1,7 @@
 "use server";
 
 import { createClient } from "@/utils/supabase/server";
+import { eachDayOfInterval, format, subDays, startOfDay, endOfDay } from "date-fns";
 
 export async function getDashboardStats() {
     const supabase = await createClient();
@@ -216,23 +217,53 @@ export async function getReportStats() {
 }
 
 export async function getRevenueData({ from, to }: { from?: Date; to?: Date } = {}) {
-    // Mock data for revenue trend
-    // Real implementation would aggregate orders by date
+    const supabase = await createClient();
 
-    // In a real app we would filter query by from/to
-    // const query = supabase.from('orders')...
-    // if (from) query.gte('created_at', from.toISOString())
-    // if (to) query.lte('created_at', to.toISOString())
+    const endDate = to || new Date();
+    const startDate = from || subDays(endDate, 7);
 
-    return [
-        { day: "Mon", grossRevenue: Math.floor(Math.random() * 5000) + 1000, netRevenue: Math.floor(Math.random() * 4000) + 800 },
-        { day: "Tue", grossRevenue: Math.floor(Math.random() * 5000) + 1000, netRevenue: Math.floor(Math.random() * 4000) + 800 },
-        { day: "Wed", grossRevenue: Math.floor(Math.random() * 5000) + 1000, netRevenue: Math.floor(Math.random() * 4000) + 800 },
-        { day: "Thu", grossRevenue: Math.floor(Math.random() * 5000) + 1000, netRevenue: Math.floor(Math.random() * 4000) + 800 },
-        { day: "Fri", grossRevenue: Math.floor(Math.random() * 5000) + 1000, netRevenue: Math.floor(Math.random() * 4000) + 800 },
-        { day: "Sat", grossRevenue: Math.floor(Math.random() * 5000) + 1000, netRevenue: Math.floor(Math.random() * 4000) + 800 },
-        { day: "Sun", grossRevenue: Math.floor(Math.random() * 5000) + 1000, netRevenue: Math.floor(Math.random() * 4000) + 800 },
-    ];
+    // Fetch orders within range
+    const { data: orders, error } = await supabase
+        .from("orders")
+        .select("created_at, total_amount, status")
+        .gte("created_at", startOfDay(startDate).toISOString())
+        .lte("created_at", endOfDay(endDate).toISOString());
+
+    if (error) {
+        console.error("Error fetching revenue data:", error);
+        return [];
+    }
+
+    const revenueByDate = new Map<string, number>();
+
+    orders?.forEach((order) => {
+        const status = (order.status || "").toLowerCase();
+        // Assuming 'paid', 'completed', 'delivered' count as revenue
+        if (["paid", "completed", "delivered"].includes(status)) {
+            const amount = parseFloat(String(order.total_amount || "0").replace(/[^0-9.-]+/g, ""));
+            const validAmount = isNaN(amount) ? 0 : amount;
+            const dayKey = format(new Date(order.created_at), "yyyy-MM-dd");
+
+            revenueByDate.set(dayKey, (revenueByDate.get(dayKey) || 0) + validAmount);
+        }
+    });
+
+    // Generate all days in interval to ensure continuous line
+    const days = eachDayOfInterval({ start: startDate, end: endDate });
+
+    return days.map((day) => {
+        const dayKey = format(day, "yyyy-MM-dd");
+        const grossRevenue = revenueByDate.get(dayKey) || 0;
+
+        // Mocking Net Revenue as 75% of Gross for visual trend, as real cost data calculation depends on deeper joins
+        const netRevenue = Math.floor(grossRevenue * 0.75);
+
+        return {
+            day: format(day, "MMM dd"),
+            grossRevenue,
+            netRevenue
+        };
+    });
 }
 
 export async function getCustomerGrowthData() {

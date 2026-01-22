@@ -27,7 +27,7 @@ import {
   SelectValue,
 } from "../ui/select";
 import { Icon } from "@iconify/react";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { Calendar } from "../ui/calendar";
@@ -53,6 +53,7 @@ export default function DisplayTable<TData, TValue>({
   searchValue = "",
   onSearchChange,
   isSearching = false,
+  onSortChange,
 }: {
   title: string;
   columns: ColumnDef<TData, TValue>[];
@@ -73,6 +74,7 @@ export default function DisplayTable<TData, TValue>({
   searchValue?: string;
   onSearchChange?: (value: string) => void;
   isSearching?: boolean;
+  onSortChange?: (value: string) => void;
 }) {
   const [sortValue, setSortValue] = useState("");
   const [dateRange, setDateRange] = useState<DateRange | undefined>();
@@ -100,13 +102,13 @@ export default function DisplayTable<TData, TValue>({
     },
   });
 
-  const getLastIndex = useMemo(() => {
-    const rowCount = table.getRowCount();
+  // const getLastIndex = useMemo(() => {
+  //   const rowCount = table.getRowCount();
 
-    return pagination.pageSize * (pagination.pageIndex + 1) < rowCount
-      ? pagination.pageSize * (pagination.pageIndex + 1)
-      : rowCount;
-  }, [table, pagination.pageSize, pagination.pageIndex]);
+  //   return pagination.pageSize * (pagination.pageIndex + 1) < rowCount
+  //     ? pagination.pageSize * (pagination.pageIndex + 1)
+  //     : rowCount;
+  // }, [table, pagination.pageSize, pagination.pageIndex]);
 
   return (
     <div className="w-full mx-auto border border-grey-200 rounded-md">
@@ -200,7 +202,10 @@ export default function DisplayTable<TData, TValue>({
                   setSortValue(val);
 
                   if (val !== "") {
-                    table.setSorting(() => [{ id: val, desc: false }]);
+                    // table.setSorting(() => [{ id: val, desc: false }]);
+                    if (onSortChange) {
+                      onSortChange(val);
+                    }
                   }
                 }}
               >

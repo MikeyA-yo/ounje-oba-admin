@@ -464,7 +464,14 @@ export default function SingleProductForm() {
           className="w-full mt-8"
           disabled={!form.formState.isValid || mutation.isPending}
         >
-          Add Product
+          {mutation.isPending ? (
+            <div className="flex items-center gap-2">
+              <Icon icon="hugeicons:loading-03" className="animate-spin" />
+              Adding Product...
+            </div>
+          ) : (
+            "Add Product"
+          )}
         </Button>
       </form>
 
