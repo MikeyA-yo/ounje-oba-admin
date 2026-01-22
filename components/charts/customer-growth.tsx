@@ -1,5 +1,4 @@
 // import { customerGrowth } from "@/data/reports";
-import { Icon } from "@iconify/react/dist/iconify.js";
 import {
   CartesianGrid,
   Label,
@@ -11,18 +10,25 @@ import {
   YAxis,
 } from "recharts";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export default function CustomerGrowth({ data }: { data: any[] }) {
+import { DatePickerWithRange } from "../ui/date-range-picker";
+import { DateRange } from "react-day-picker";
+
+export default function CustomerGrowth({
+  data,
+  date,
+  setDate
+}: {
+  data: any[]; // eslint-disable-line @typescript-eslint/no-explicit-any
+  date?: DateRange;
+  setDate?: (date: DateRange | undefined) => void;
+}) {
   return (
     <div className="border rounded-lg p-4">
       <div className="flex justify-between items-center gap-2">
         <h2 className="h6-medium">Customer Growth</h2>
-        <div className="flex items-center gap-2 font-medium border border-[#8D8D8D] rounded-lg px-2 py-1">
-          <Icon icon={"hugeicons:calendar-03"} />
-          <p>
-            1-May, 2025 <span className="text-grey-700">to</span> 30-May, 2025
-          </p>
-        </div>
+        {date && setDate && (
+          <DatePickerWithRange date={date} setDate={setDate} />
+        )}
       </div>
       <ResponsiveContainer width={"100%"} height={350} className="mt-6">
         <LineChart
@@ -66,12 +72,7 @@ export default function CustomerGrowth({ data }: { data: any[] }) {
             interval={1}
             fontSize={"14px"}
           >
-            <Label
-              value={"May, 2025"}
-              position={"bottom"}
-              offset={0}
-              fontSize={"14px"}
-            />
+
           </XAxis>
           <Line
             isAnimationActive={false}

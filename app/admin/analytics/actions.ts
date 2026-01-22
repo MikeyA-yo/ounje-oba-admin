@@ -203,16 +203,103 @@ export async function getTransactionStats() {
     };
 }
 
-export async function getReportStats() {
-    // Re-using logic from getDashboardStats but formatting for ReportCards
-    const { ordersCount, usersCount, totalRevenue } = await getDashboardStats();
+export async function getReportStats({ from, to }: { from?: Date; to?: Date } = {}) {
+    const supabase = await createClient();
 
-    // Mock growth for now
+    // Define periods: Current vs Previous (same duration)
+    const currentEnd = to || new Date();
+    const currentStart = from || subDays(currentEnd, 30);
+    const duration = currentEnd.getTime() - currentStart.getTime();
+
+    const previousEnd = new Date(currentStart.getTime()); // Previous ends where current starts
+    const previousStart = new Date(previousEnd.getTime() - duration);
+
+    // Helper to get counts and sum for a period
+    async function getPeriodStats(start: Date, end: Date) {
+        const startStr = start.toISOString();
+        const endStr = end.toISOString();
+
+        const { count: ordersCount } = await supabase
+            .from("orders")
+            .select("*", { count: "exact", head: true })
+            .gte("created_at", startStr)
+            .lte("created_at", endStr);
+
+        const { count: usersCount } = await supabase
+            .from("profiles")
+            .select("*", { count: "exact", head: true })
+            .gte("created_at", startStr)
+            .lte("created_at", endStr);
+
+        const { data: revenueOrders } = await supabase
+            .from("orders")
+            .select("total_amount, status")
+            .gte("created_at", startStr)
+            .lte("created_at", endStr);
+
+        let revenue = 0;
+        revenueOrders?.forEach(o => {
+            const status = (o.status || "").toLowerCase();
+            if (["paid", "completed", "delivered"].includes(status)) {
+                const amount = parseFloat(String(o.total_amount || "0").replace(/[^0-9.-]+/g, ""));
+                revenue += isNaN(amount) ? 0 : amount;
+            }
+        });
+
+        return {
+            orders: ordersCount || 0,
+            users: usersCount || 0,
+            revenue
+        };
+    }
+
+    const current = await getPeriodStats(currentStart, currentEnd);
+    const previous = await getPeriodStats(previousStart, previousEnd);
+
+    const calculateGrowth = (curr: number, prev: number) => {
+        if (prev === 0) return curr > 0 ? 100 : 0;
+        return Math.round(((curr - prev) / prev) * 100);
+    };
+
+    // Get total customers (all time) for the display value, but growth is based on recent trend
+    const { count: totalCustomers } = await supabase
+        .from("profiles")
+        .select("*", { count: "exact", head: true });
+
+    // Get total orders (all time)
+    const { count: totalOrders } = await supabase
+        .from("orders")
+        .select("*", { count: "exact", head: true });
+
+    // Get total revenue (all time)
+    const { data: allOrders } = await supabase.from("orders").select("total_amount, status");
+    let totalRevenue = 0;
+    allOrders?.forEach(o => {
+        const status = (o.status || "").toLowerCase();
+        if (["paid", "completed", "delivered"].includes(status)) {
+            const amount = parseFloat(String(o.total_amount || "0").replace(/[^0-9.-]+/g, ""));
+            totalRevenue += isNaN(amount) ? 0 : amount;
+        }
+    });
+
+
     return {
-        totalRevenue: { value: totalRevenue, growth: 12 },
-        totalOrders: { value: ordersCount, growth: 5 },
-        totalCustomers: { value: usersCount, growth: 8 },
-        newCustomers: { value: Math.floor(usersCount * 0.1), growth: 2 }, // Mock new customers as 10% of total
+        totalRevenue: {
+            value: totalRevenue,
+            growth: calculateGrowth(current.revenue, previous.revenue)
+        },
+        totalOrders: {
+            value: totalOrders || 0,
+            growth: calculateGrowth(current.orders, previous.orders)
+        },
+        totalCustomers: {
+            value: totalCustomers || 0,
+            growth: calculateGrowth(current.users, previous.users)
+        },
+        newCustomers: {
+            value: current.users,
+            growth: calculateGrowth(current.users, previous.users)
+        },
     };
 }
 
@@ -266,17 +353,58 @@ export async function getRevenueData({ from, to }: { from?: Date; to?: Date } = 
     });
 }
 
-export async function getCustomerGrowthData() {
-    // Mock data for customer growth
-    return [
-        { day: 1, customers: 120 },
-        { day: 5, customers: 135 },
-        { day: 10, customers: 150 },
-        { day: 15, customers: 180 },
-        { day: 20, customers: 220 },
-        { day: 25, customers: 250 },
-        { day: 30, customers: 300 },
-    ];
+export async function getCustomerGrowthData({ from, to }: { from?: Date; to?: Date } = {}) {
+    const supabase = await createClient();
+
+    // Default to last 30 days if no range specified
+    const end = to || new Date();
+    const start = from || subDays(end, 30);
+
+    const { data: profiles, error } = await supabase
+        .from("profiles")
+        .select("created_at")
+        .gte("created_at", start.toISOString())
+        .lte("created_at", end.toISOString())
+        .order("created_at", { ascending: true });
+
+    if (error) {
+        console.error("Error fetching customer growth:", error);
+        return [];
+    }
+
+    // const growthMap = new Map<string, number>();
+
+    // Initialize map with running total if we wanted cumulative, but usually "Growth" chart shows new users per day or cumulative.
+    // The provided image shows a line going up, implying cumulative count.
+
+    // To do cumulative properly, we need the count BEFORE the start date.
+    const { count: previousCount } = await supabase
+        .from("profiles")
+        .select("*", { count: "exact", head: true })
+        .lt("created_at", start.toISOString());
+
+    let runningTotal = previousCount || 0;
+
+    // Group new profiles by day
+    const dailyNewUsers = new Map<string, number>();
+    profiles?.forEach(p => {
+        const dayKey = format(new Date(p.created_at), "yyyy-MM-dd");
+        dailyNewUsers.set(dayKey, (dailyNewUsers.get(dayKey) || 0) + 1);
+    });
+
+    const days = eachDayOfInterval({ start, end });
+
+    return days.map(day => {
+        const dayKey = format(day, "yyyy-MM-dd");
+        const newUsers = dailyNewUsers.get(dayKey) || 0;
+        runningTotal += newUsers;
+
+        return {
+            day: format(day, "MMM dd"), // or just day number if that's what chart expects, but date is better
+            // component expects 'day' and 'customers'
+            customers: runningTotal
+        };
+    });
 }
 
 export async function getPaymentMethodStats() {

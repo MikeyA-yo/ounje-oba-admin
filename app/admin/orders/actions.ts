@@ -15,7 +15,7 @@ export async function getOrders({
     const from = (page - 1) * pageSize;
     const to = from + pageSize - 1;
 
-    const query = supabase
+    let query = supabase
         .from("orders")
         .select(`
             *,
@@ -25,7 +25,8 @@ export async function getOrders({
         .order("created_at", { ascending: false });
 
     if (search) {
-        // query = query.ilike("order_number", `%${search}%`); // Assuming order_number exists
+        // Search by order_number or partial ID
+        query = query.or(`order_number.ilike.%${search}%,id.ilike.%${search}%`);
     }
 
     const { data, error, count } = await query;

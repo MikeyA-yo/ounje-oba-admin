@@ -18,20 +18,26 @@ import {
 } from "@/app/admin/analytics/actions";
 import { getProducts } from "@/app/admin/products/actions";
 import { useState } from "react";
+import { DateRange } from "react-day-picker";
+import { subDays } from "date-fns";
 
 export default function Reports() {
   const columns = useReportProducts();
   const [pageSize] = useState(10);
   const [page] = useState(1);
+  const [date, setDate] = useState<DateRange | undefined>({
+    from: subDays(new Date(), 30),
+    to: new Date(),
+  });
 
   const { data: stats, isLoading: isLoadingStats } = useQuery({
-    queryKey: ["report-stats"],
-    queryFn: async () => await getReportStats(),
+    queryKey: ["report-stats", date],
+    queryFn: async () => await getReportStats({ from: date?.from, to: date?.to }),
   });
 
   const { data: revenueData, isLoading: isLoadingRevenue } = useQuery({
-    queryKey: ["revenue-data"],
-    queryFn: async () => await getRevenueData(),
+    queryKey: ["revenue-data", date],
+    queryFn: async () => await getRevenueData({ from: date?.from, to: date?.to }),
   });
 
   const { data: ordersTrendData, isLoading: isLoadingOrdersTrend } = useQuery({
@@ -40,8 +46,8 @@ export default function Reports() {
   });
 
   const { data: customerGrowthData, isLoading: isLoadingCustomerGrowth } = useQuery({
-    queryKey: ["customer-growth-data"],
-    queryFn: async () => await getCustomerGrowthData(),
+    queryKey: ["customer-growth-data", date],
+    queryFn: async () => await getCustomerGrowthData({ from: date?.from, to: date?.to }),
   });
 
   const { data: paymentMethodData, isLoading: isLoadingPaymentMethod } = useQuery({
@@ -64,6 +70,11 @@ export default function Reports() {
 
   return (
     <section className="mt-6">
+      {/* Header with Date Picker */}
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-2xl font-bold tracking-tight">Analytics Reports</h2>
+      </div>
+
       <div className="space-y-6">
         {isLoading || !stats ? (
           <div className="space-y-4">
@@ -74,10 +85,18 @@ export default function Reports() {
           <>
             <ReportCards stats={stats} />
 
-            <CustomerGrowth data={customerGrowthData || []} />
+            <CustomerGrowth
+              data={customerGrowthData || []}
+              date={date}
+              setDate={setDate}
+            />
 
             <div className="grid [grid-template-columns:65%_auto] gap-6">
-              <RevenueTrendChart data={revenueData || []} />
+              <RevenueTrendChart
+                data={revenueData || []}
+                date={date}
+                setDate={setDate}
+              />
               <OrdersTrendChart data={ordersTrendData || []} />
             </div>
 
