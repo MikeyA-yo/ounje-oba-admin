@@ -10,15 +10,16 @@ import { Skeleton } from "@/components/ui/skeleton";
 export default function Products() {
   const [pageSize /* , setPageSize */] = useState(10);
   const [page /* , setPage */] = useState(1);
+  const [search, setSearch] = useState("");
   const columns = useProductColumns();
 
   const { data, isLoading, refetch } = useQuery({
-    queryKey: ["products", page],
+    queryKey: ["products", page, search],
     queryFn: async () => {
       const { results, count } = await getProducts({
         page,
         pageSize,
-        search: "", // You could add search state here later
+        search,
       });
       return { results, count };
     },
@@ -42,7 +43,9 @@ export default function Products() {
             count={data.count}
             pageSize={pageSize}
             // setPageSize={(size) => setPageSize(size)}
-            showSearch={false}
+            showSearch={true}
+            searchValue={search}
+            onSearchChange={setSearch}
             sortOptions={[
               { key: "name", value: "Product Name" },
               { key: "price", value: "Price" },
