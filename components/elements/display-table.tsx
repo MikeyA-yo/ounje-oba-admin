@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import {
@@ -32,6 +33,8 @@ import { cn } from "@/lib/utils";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { Calendar } from "../ui/calendar";
 import { type DateRange } from "react-day-picker";
+
+import { useDebounce } from "@/hooks/use-debounce";
 
 export default function DisplayTable<TData, TValue>({
   title,
@@ -94,6 +97,21 @@ export default function DisplayTable<TData, TValue>({
     pageIndex: 0,
     pageSize: pageSize ?? count,
   });
+
+  const [localSearch, setLocalSearch] = useState(searchValue);
+  const debouncedSearch = useDebounce(localSearch, 500);
+
+  // Sync prop changes to local state (e.g. clear button from parent)
+  useEffect(() => {
+    setLocalSearch(searchValue);
+  }, [searchValue]);
+
+  // Trigger parent callback when debounced value changes
+  useEffect(() => {
+    if (onSearchChange && debouncedSearch !== searchValue) {
+      onSearchChange(debouncedSearch);
+    }
+  }, [debouncedSearch, onSearchChange, searchValue]);
 
   const pagination = manualPagination
     ? { pageIndex, pageSize: pageSize ?? 10 }

@@ -25,6 +25,8 @@ export default function Reports() {
   const columns = useReportProducts();
   const [pageSize] = useState(10);
   const [page] = useState(1);
+  const [search, setSearch] = useState("");
+  const [sortBy, setSortBy] = useState("created_at");
   const [date, setDate] = useState<DateRange | undefined>({
     from: subDays(new Date(), 30),
     to: new Date(),
@@ -56,8 +58,8 @@ export default function Reports() {
   });
 
   const { data: productsData, isLoading: isLoadingProducts } = useQuery({
-    queryKey: ["report-products", page, pageSize],
-    queryFn: async () => await getProducts({ page, pageSize }),
+    queryKey: ["report-products", page, pageSize, search, sortBy],
+    queryFn: async () => await getProducts({ page, pageSize, search, sortBy }),
   });
 
   const isLoading =
@@ -128,8 +130,12 @@ export default function Reports() {
               data={productsData?.results || []}
               count={productsData?.count || 0}
               pageSize={pageSize}
-              showSearch={false}
+              showSearch={true}
+              searchValue={search}
+              onSearchChange={setSearch}
+              onSortChange={setSortBy}
               sortOptions={[
+                { key: "created_at", value: "Newest" },
                 { key: "name", value: "Product Name" },
                 { key: "price", value: "Price" },
               ]}
