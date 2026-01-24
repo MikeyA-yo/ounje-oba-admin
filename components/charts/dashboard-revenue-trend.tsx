@@ -8,7 +8,6 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import { revenueTrend } from "@/data/home";
 
 import { DatePickerWithRange } from "../ui/date-range-picker";
 import { DateRange } from "react-day-picker";
@@ -34,7 +33,7 @@ export default function RevenueTrendChart({
       </div>
       <ResponsiveContainer width={"100%"} height={350} className="mt-6">
         <LineChart
-          data={data || revenueTrend}
+          data={data || []}
           margin={{ top: 30, left: 10, bottom: 15 }}
         >
           <CartesianGrid vertical={false} stroke="#F3F3F3" />

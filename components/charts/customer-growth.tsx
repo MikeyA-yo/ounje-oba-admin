@@ -44,7 +44,7 @@ export default function CustomerGrowth({
                 <>
                   {isVisible && (
                     <div className="body-3 bg-[#F3EFF6] text-primary-700 border border-primary-100 rounded-md p-2">
-                      <p className="mb-2">May {payload[0].payload.day}</p>
+                      <p className="mb-2">{payload[0].payload.day}</p>
                       <p className="flex items-center gap-2">
                         <span className="bg-primary-400 rounded-full size-2" />
                         <span className="flex-1">No of Customers</span>
