@@ -9,17 +9,25 @@ import { Skeleton } from "@/components/ui/skeleton";
 import DisplayTable from "@/components/elements/display-table";
 import { useState } from "react";
 import { useOrderColumns } from "@/components/columns/order-columns";
+import { DateRange } from "react-day-picker";
+
 export default function Orders() {
   const columns = useOrderColumns();
   const [pageSize /*, setPageSize */] = useState(10);
   const [page /*,  setPage */] = useState(1);
+  const [search, setSearch] = useState("");
+  const [sortBy, setSortBy] = useState("date_desc");
+  const [dateRange, setDateRange] = useState<DateRange | undefined>();
+
   const { data, isLoading, refetch } = useQuery({
-    queryKey: ["orders", page],
+    queryKey: ["orders", page, search, sortBy, dateRange],
     queryFn: async () => {
       const { results, count } = await getOrders({
         page,
         pageSize,
-        search: "",
+        search,
+        sortBy,
+        dateRange: dateRange as { from: Date; to: Date } | undefined,
       });
       return { results, count };
     },
@@ -42,11 +50,20 @@ export default function Orders() {
             count={data.count}
             pageSize={pageSize}
             showDateRange={true}
-            // setPageSize={(size) => setPageSize(size)}
-            // sortOptions={[
-            //   { key: "name", value: "Product Name" },
-            //   { key: "price", value: "Price" },
-            //   ]}
+            dateRange={dateRange}
+            onDateRangeChange={setDateRange}
+            showSearch={true}
+            searchValue={search}
+            onSearchChange={setSearch}
+            showSortBy={true}
+            sortOptions={[
+              { key: "date_desc", value: "Newest First" },
+              { key: "date_asc", value: "Oldest First" },
+              { key: "total_asc", value: "Total (Low - High)" },
+              { key: "total_desc", value: "Total (High - Low)" },
+              { key: "status", value: "Status" },
+            ]}
+            onSortChange={setSortBy}
             refresh={async () => {
               await refetch();
             }}

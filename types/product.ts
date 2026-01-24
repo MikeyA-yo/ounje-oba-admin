@@ -24,6 +24,10 @@ export type Product = {
   review_count: number;
   average_rating: number | null;
   primary_image_url: string | null;
+  images: string[];
+  description: string;
+  specification: string;
+  category_id: string;
   is_active: boolean;
   created_at: Date;
   updated_at: Date;

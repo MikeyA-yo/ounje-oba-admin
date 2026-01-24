@@ -159,3 +159,118 @@ export async function getProductStats() {
         out_of_stock,
     };
 }
+
+export async function deleteProduct(id: string) {
+    const supabase = await createClient();
+    const { error } = await supabase.from("products").delete().eq("id", id);
+
+    if (error) {
+        console.error("Error deleting product:", error);
+        throw new Error(error.message);
+    }
+
+    revalidatePath("/products");
+}
+
+export async function getProduct(id: string) {
+    const supabase = await createClient();
+    const { data, error } = await supabase
+        .from("products")
+        .select(`
+            *,
+            category:categories(name)
+        `)
+        .eq("id", id)
+        .single();
+
+    if (error) {
+        console.error("Error fetching product:", error);
+        return null;
+    }
+
+    return data;
+}
+
+export async function updateProduct(id: string, formData: FormData) {
+    const supabase = await createClient();
+    const name = formData.get("name") as string;
+    const category_id = formData.get("category_id") as string;
+    const price = parseFloat(formData.get("price") as string);
+    const stock_quantity = parseInt(formData.get("stock_quantity") as string);
+    const description = formData.get("description") as string;
+    const sku = formData.get("sku") as string;
+    const low_stock_alert = parseInt(formData.get("low_stock_alert") as string) || 0;
+    const specification = formData.get("specification") as string;
+
+    // Handle Images
+    const imageFiles = formData.getAll("image_files") as File[];
+
+    const imageUrls: string[] = [];
+    const existingImages = formData.getAll("existing_images") as string[];
+
+    for (const file of imageFiles) {
+        if (file instanceof File && file.size > 0) {
+            const fileName = `${Date.now()}-${file.name.replaceAll(" ", "_")}`;
+            const { error } = await supabase.storage
+                .from("products")
+                .upload(fileName, file);
+
+            if (error) {
+                console.error("Error uploading image:", error);
+                continue;
+            }
+
+            const { data: { publicUrl } } = supabase.storage
+                .from("products")
+                .getPublicUrl(fileName);
+
+            imageUrls.push(publicUrl);
+        }
+    }
+
+    // Combine existing (if any passed) with new
+    const finalImages = [...(existingImages || []), ...imageUrls];
+
+    const updateData: {
+        name: string;
+        category_id: string;
+        price: number;
+        stock_quantity: number;
+        description: string;
+        sku: string;
+        low_stock_alert: number;
+        specification: string;
+        updated_at: string;
+        images?: string[];
+    } = {
+        name,
+        category_id,
+        price,
+        stock_quantity,
+        description,
+        sku,
+        low_stock_alert,
+        specification,
+        updated_at: new Date().toISOString(),
+    };
+
+    if (finalImages.length > 0) {
+        updateData.images = finalImages;
+    }
+
+    const { data, error } = await supabase
+        .from("products")
+        .update(updateData)
+        .eq("id", id)
+        .select()
+        .single();
+
+    if (error) {
+        console.error("Error updating product:", error);
+        throw new Error(error.message);
+    }
+
+    revalidatePath("/products");
+    revalidatePath(`/products/${id}`);
+    return data;
+}

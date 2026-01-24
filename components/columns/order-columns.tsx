@@ -2,8 +2,11 @@ import { Order, OrderStatus } from "@/types/order";
 import { ColumnDef } from "@tanstack/react-table";
 import { Button } from "../ui/button";
 import { Badge } from "../ui/badge";
+import { useRouter } from "next/navigation";
 
 export const useOrderColumns = (): ColumnDef<Order>[] => {
+  const router = useRouter();
+
   return [
     {
       id: "sn",
@@ -86,10 +89,17 @@ export const useOrderColumns = (): ColumnDef<Order>[] => {
     {
       id: "actions",
       header: "Actions",
-      cell: ({ }) => {
-        // const orderId = row.original.id;
+      cell: ({ row }) => {
+        const orderId = row.original.id;
 
-        return <Button variant={"ghost"}>View</Button>;
+        return (
+          <Button
+            variant={"ghost"}
+            onClick={() => router.push(`/orders/${orderId}`)}
+          >
+            View
+          </Button>
+        );
       },
     },
   ];

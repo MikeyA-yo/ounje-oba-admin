@@ -28,30 +28,36 @@ import { useState } from "react";
 import { Icon } from "@iconify/react";
 import AddVariationForm from "./add-variation-form";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { createProduct, getCategories } from "@/app/admin/products/actions";
-import { ProductCategory } from "@/types/product";
+import { createProduct, getCategories, updateProduct } from "@/app/admin/products/actions";
+import { ProductCategory, Product } from "@/types/product";
 import { useDropzone } from "react-dropzone";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 
-export default function SingleProductForm() {
+
+interface SingleProductFormProps {
+  product?: Product | null;
+}
+
+export default function SingleProductForm({ product }: SingleProductFormProps) {
   const [showVariationForm, setShowVariationForm] = useState(false);
   const [files, setFiles] = useState<File[]>([]);
-  const [previews, setPreviews] = useState<string[]>([]);
+  // Initialize previews if editing
+  const [previews, setPreviews] = useState<string[]>(product?.images || []);
 
   const form = useForm<z.infer<typeof singleProductSchema>>({
     resolver: zodResolver(singleProductSchema),
     mode: "onChange",
     defaultValues: {
-      name: "",
-      category_id: "",
-      sku: "",
-      stock_quantity: "",
-      low_stock_alert: "",
-      price: "",
-      description: "",
-      specification: "",
+      name: product?.name || "",
+      category_id: product?.category_id || "",
+      sku: product?.sku || "",
+      stock_quantity: product?.stock_quantity ? String(product.stock_quantity) : "",
+      low_stock_alert: product?.low_stock_alert ? String(product.low_stock_alert) : "",
+      price: product?.price ? String(product.price) : "",
+      description: product?.description || "",
+      specification: product?.specification || "",
       image_files: undefined,
     },
   });
@@ -96,16 +102,31 @@ export default function SingleProductForm() {
         formdata.append("image_files", file);
       });
 
-      return await createProduct(formdata);
+      if (product?.id) {
+        // Edit mode
+        // Append existing images that haven't been deleted
+        // We need to track deleted existing images if we support deleting them. 
+        // Current logic: 'previews' contains all valid image URLs (new + old).
+        // But our form handling of 'existing_images' is not fully wired.
+        // Let's iterate 'previews' and filtering those that are Supabase URLs (existing).
+        const existing = previews.filter(url => url.startsWith("http")); // naive check, assume blobs are new
+        existing.forEach(url => formdata.append("existing_images", url));
+
+        return await updateProduct(product.id, formdata);
+      } else {
+        return await createProduct(formdata);
+      }
     },
     onSuccess: () => {
-      toast.success("Product created successfully");
-      form.reset();
-      setFiles([]);
-      setPreviews([]);
+      toast.success(product?.id ? "Product updated successfully" : "Product created successfully");
+      if (!product?.id) {
+        form.reset();
+        setFiles([]);
+        setPreviews([]);
+      }
     },
     onError: (error) => {
-      toast.error(error.message || "Failed to create product");
+      toast.error(error.message || (product?.id ? "Failed to update product" : "Failed to create product"));
     },
   });
 
@@ -470,7 +491,7 @@ export default function SingleProductForm() {
               Adding Product...
             </div>
           ) : (
-            "Add Product"
+            product?.id ? "Update Product" : "Add Product"
           )}
         </Button>
       </form>

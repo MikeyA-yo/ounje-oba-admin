@@ -1,8 +1,8 @@
 export interface Customer {
   id: number;
-  name: string;
+  name: string; // or full_name
   email: string;
-  phoneNumber: string;
+  phoneNumber: string; // or phone_number
   totalAmount: number;
-  status: string;
+  status: string; // or something else
 }

@@ -21,6 +21,7 @@ import { DateRange } from "react-day-picker";
 import { useState } from "react";
 import { DisplayTable, HomeCards, SummaryTable } from "@/components/index";
 import { OrdersTrendChart, RevenueTrendChart } from "@/components/charts";
+import { useDebounce } from "@/hooks/use-debounce";
 
 export default function Home() {
   const searchParams = useSearchParams();
@@ -49,14 +50,17 @@ export default function Home() {
     router.push(`${pathname}?${createQueryString("page", (newPage + 1).toString())}`, { scroll: false });
   };
 
+  const [topProductsSearch, setTopProductsSearch] = useState("");
+  const debouncedTopProductsSearch = useDebounce(topProductsSearch, 500);
+
   const { data: stats, isLoading: isLoadingStats } = useQuery({
     queryKey: ["dashboard-stats"],
     queryFn: async () => await getDashboardStats(),
   });
 
   const { data: topSellingData, isLoading: isLoadingTopSelling } = useQuery({
-    queryKey: ["dashboard-top-selling"],
-    queryFn: async () => await getProducts({ page: 1, pageSize: 6 }),
+    queryKey: ["dashboard-top-selling", debouncedTopProductsSearch],
+    queryFn: async () => await getProducts({ page: 1, pageSize: 6, search: debouncedTopProductsSearch }),
   });
 
   const { data: productsData, isLoading: isLoadingProducts } = useQuery({
@@ -109,6 +113,8 @@ export default function Home() {
               showFooter={false}
               showSortBy={false}
               refresh={async () => { }}
+              searchValue={topProductsSearch}
+              onSearchChange={setTopProductsSearch}
             />
 
             <SummaryTable title="Top Customers" href="#" data={topCustomersData || []} />

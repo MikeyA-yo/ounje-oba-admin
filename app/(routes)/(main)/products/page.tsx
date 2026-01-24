@@ -12,8 +12,6 @@ export default function Products() {
   const [page /* , setPage */] = useState(1);
   const [search, setSearch] = useState("");
   const [sortBy, setSortBy] = useState("created_at");
-  const columns = useProductColumns();
-
   const { data, isLoading, refetch } = useQuery({
     queryKey: ["products", page, search, sortBy],
     queryFn: async () => {
@@ -27,6 +25,8 @@ export default function Products() {
     },
     placeholderData: keepPreviousData,
   });
+
+  const columns = useProductColumns(refetch);
 
   return (
     <section className="mt-6">

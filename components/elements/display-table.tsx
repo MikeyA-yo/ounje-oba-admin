@@ -54,6 +54,8 @@ export default function DisplayTable<TData, TValue>({
   onSearchChange,
   isSearching = false,
   onSortChange,
+  dateRange,
+  onDateRangeChange,
 }: {
   title: string;
   columns: ColumnDef<TData, TValue>[];
@@ -63,7 +65,7 @@ export default function DisplayTable<TData, TValue>({
   showSortBy?: boolean;
   showDateRange?: boolean;
   showSearch?: boolean;
-  sortOptions?: { key: keyof TData; value: string }[];
+  sortOptions?: { key: string; value: string }[];
   showFooter?: boolean;
   wideRows?: boolean;
   // setPageSize: (size: number) => void;
@@ -75,9 +77,11 @@ export default function DisplayTable<TData, TValue>({
   onSearchChange?: (value: string) => void;
   isSearching?: boolean;
   onSortChange?: (value: string) => void;
+  dateRange?: DateRange | undefined;
+  onDateRangeChange?: (range: DateRange | undefined) => void;
 }) {
   const [sortValue, setSortValue] = useState("");
-  const [dateRange, setDateRange] = useState<DateRange | undefined>();
+  // const [internalDateRange, setInternalDateRange] = useState<DateRange | undefined>(); // Helper if we wanted uncontrolled support
   const [internalPagination, setInternalPagination] = useState<PaginationState>({
     pageIndex: 0,
     pageSize: pageSize ?? count,
@@ -162,7 +166,7 @@ export default function DisplayTable<TData, TValue>({
                 <Calendar
                   mode="range"
                   selected={dateRange}
-                  onSelect={setDateRange}
+                  onSelect={onDateRangeChange}
                 />
               </PopoverContent>
             </Popover>

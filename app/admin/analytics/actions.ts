@@ -40,25 +40,62 @@ export async function getDashboardStats() {
 export async function getTransactions({
     page = 1,
     pageSize = 10,
+    search = "",
+    sortBy = "date_desc",
+    dateRange,
 }: {
     page?: number;
     pageSize?: number;
+    search?: string;
+    sortBy?: string;
+    dateRange?: { from: Date; to: Date };
 }) {
-    // Assuming 'orders' table acts as transactions for now, or use 'transactions' table if exists.
-    // Checking previous context, user didn't mention specific transactions table, so we fallback to orders or check.
-    // Let's assume 'orders' for now as the user mentioned "Transactions List" in task.md which often mirrors orders.
-    // However, I'll check if 'transactions' table exists by trying to select from it.
-
     const supabase = await createClient();
     const from = (page - 1) * pageSize;
     const to = from + pageSize - 1;
 
-    // Try fetching from orders as transactions
-    const { data, count, error } = await supabase
+    // Use orders as transactions
+    let query = supabase
         .from("orders")
         .select("*", { count: "exact" })
-        .range(from, to)
-        .order("created_at", { ascending: false });
+        .range(from, to);
+
+    if (search) {
+        query = query.or(`order_number.ilike.%${search}%,customer_name.ilike.%${search}%,id.ilike.%${search}%`);
+    }
+
+    if (dateRange?.from) {
+        query = query.gte("created_at", dateRange.from.toISOString());
+    }
+
+    if (dateRange?.to) {
+        const endOfDay = new Date(dateRange.to);
+        endOfDay.setHours(23, 59, 59, 999);
+        query = query.lte("created_at", endOfDay.toISOString());
+    }
+
+    switch (sortBy) {
+        case "date_asc":
+            query = query.order("created_at", { ascending: true });
+            break;
+        case "date_desc":
+            query = query.order("created_at", { ascending: false });
+            break;
+        case "amount_asc":
+            query = query.order("total_amount", { ascending: true });
+            break;
+        case "amount_desc":
+            query = query.order("total_amount", { ascending: false });
+            break;
+        case "status":
+            query = query.order("status", { ascending: true });
+            break;
+        default:
+            query = query.order("created_at", { ascending: false });
+            break;
+    }
+
+    const { data, count, error } = await query;
 
     if (error) {
         console.error("Error fetching transactions:", error);
@@ -66,18 +103,17 @@ export async function getTransactions({
     }
 
     // Map orders to transaction shape
-    const results = data.map(order => {
-        // const dateObj = new Date(order.created_at); // Unused
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const results = data.map((order: any) => {
         return {
-            transactionId: order.id.slice(0, 8).toUpperCase(), // Shorten ID for display
+            id: order.id, // Use string ID (uuid)
+            transactionId: (order.order_number || order.id.slice(0, 8)).toUpperCase(),
             customer: order.customer_name || "Unknown",
-            date: order.created_at, // Keep ISO string for easy parsing if needed, but columns expect separate date/time or handled by cell.
-            // Actually columns accessorFn uses `t.date` and `t.time`.
-            // Let's split them.
-            time: order.created_at, // The column component parses ISO string just fine
+            date: order.created_at,
+            time: order.created_at,
             amount: `₦${parseFloat(String(order.total_amount || "0").replace(/[^0-9.-]+/g, "")).toLocaleString()}`,
-            paymentType: order.payment_method || "N/A", // payment_method might not be selected in query, need to verify
-            status: order.status.charAt(0).toUpperCase() + order.status.slice(1), // Capitalize
+            paymentType: order.payment_method || "N/A",
+            status: (order.status || "Pending").charAt(0).toUpperCase() + (order.status || "Pending").slice(1),
         };
     });
 

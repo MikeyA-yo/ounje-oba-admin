@@ -51,14 +51,14 @@ export async function getCustomers({
     const from = (page - 1) * pageSize;
     const to = from + pageSize - 1;
 
-    const query = supabase
+    let query = supabase
         .from("profiles") // Assuming customers are strictly in profiles for now
         .select("*", { count: "exact" })
         .range(from, to)
         .order("created_at", { ascending: false });
 
     if (search) {
-        // query = query.or(`full_name.ilike.%${search}%,email.ilike.%${search}%`);
+        query = query.or(`full_name.ilike.%${search}%,email.ilike.%${search}%`);
     }
 
     const { data, error, count } = await query;
@@ -68,8 +68,18 @@ export async function getCustomers({
         return { results: [], count: 0 };
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const results = data.map((profile: any) => ({
+        id: profile.id,
+        name: profile.full_name || "N/A",
+        email: profile.email || "N/A",
+        phoneNumber: profile.phone_number || profile.phone || "N/A",
+        totalAmount: 0, // Placeholder as we don't have order sum here yet
+        status: profile.status || "Active", // Default to Active
+    }));
+
     return {
-        results: data,
+        results,
         count: count || 0,
     };
 }
@@ -153,5 +163,29 @@ export async function getCouponStats() {
             expiredCouponsCount: expiredCoupons,
         },
         chartData: topCoupons
+    };
+}
+
+export async function getCustomerStats() {
+    const supabase = await createClient();
+
+    const { count: total_customers } = await supabase
+        .from("profiles")
+        .select("*", { count: "exact", head: true });
+
+    const { count: active_customers } = await supabase
+        .from("profiles")
+        .select("*", { count: "exact", head: true })
+        .eq("status", "Active");
+
+    const { count: inactive_customers } = await supabase
+        .from("profiles")
+        .select("*", { count: "exact", head: true })
+        .neq("status", "Active");
+
+    return {
+        total_customers: total_customers || 0,
+        active_customers: active_customers || 0,
+        inactive_customers: inactive_customers || 0,
     };
 }

@@ -7,9 +7,67 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useRouter } from "next/navigation";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { deleteProduct } from "@/app/admin/products/actions";
+import { toast } from "sonner";
+import { useState } from "react";
 
-export const useProductColumns = (): ColumnDef<Product>[] => {
+export const useProductColumns = (refresh?: () => void): ColumnDef<Product>[] => {
   const router = useRouter();
+
+  const DeleteAction = ({ id }: { id: string }) => {
+    const [isLoading, setIsLoading] = useState(false);
+
+    const handleDelete = async () => {
+      setIsLoading(true);
+      try {
+        await deleteProduct(id);
+        toast.success("Product deleted successfully");
+        if (refresh) {
+          refresh();
+        }
+      } catch (error) {
+        toast.error("Failed to delete product");
+        console.error(error);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
+    return (
+      <AlertDialog>
+        <AlertDialogTrigger asChild>
+          <Button variant="ghost" className="text-black">
+            <Icon icon="hugeicons:delete-02" />
+          </Button>
+        </AlertDialogTrigger>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. This will permanently delete the product.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDelete} disabled={isLoading} className="bg-red-600 hover:bg-red-700">
+              {isLoading ? "Deleting..." : "Delete"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    );
+  };
 
   return [
     {
@@ -108,15 +166,7 @@ export const useProductColumns = (): ColumnDef<Product>[] => {
             >
               <Icon icon="hugeicons:pencil-edit-02" />
             </Button>
-            <Button
-              variant="ghost"
-              className="text-black"
-              onClick={() => {
-                router.push(`/products/${productId}`);
-              }}
-            >
-              <Icon icon="hugeicons:delete-02" />
-            </Button>
+            <DeleteAction id={productId} />
           </div>
         );
       },
