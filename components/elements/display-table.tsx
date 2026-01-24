@@ -56,6 +56,10 @@ export default function DisplayTable<TData, TValue>({
   onSortChange,
   dateRange,
   onDateRangeChange,
+  filterOptions = [],
+  filterValue,
+  onFilterChange,
+  showFilter = false,
 }: {
   title: string;
   columns: ColumnDef<TData, TValue>[];
@@ -79,6 +83,10 @@ export default function DisplayTable<TData, TValue>({
   onSortChange?: (value: string) => void;
   dateRange?: DateRange | undefined;
   onDateRangeChange?: (range: DateRange | undefined) => void;
+  filterOptions?: { label: string; value: string }[];
+  filterValue?: string;
+  onFilterChange?: (value: string) => void;
+  showFilter?: boolean;
 }) {
   const [sortValue, setSortValue] = useState("");
   // const [internalDateRange, setInternalDateRange] = useState<DateRange | undefined>(); // Helper if we wanted uncontrolled support
@@ -112,7 +120,7 @@ export default function DisplayTable<TData, TValue>({
   //   return pagination.pageSize * (pagination.pageIndex + 1) < rowCount
   //     ? pagination.pageSize * (pagination.pageIndex + 1)
   //     : rowCount;
-  // }, [table, pagination.pageSize, pagination.pageIndex]);
+  //   // }, [table, pagination.pageSize, pagination.pageIndex]);
 
   return (
     <div className="w-full mx-auto border border-grey-200 rounded-md">
@@ -172,14 +180,24 @@ export default function DisplayTable<TData, TValue>({
             </Popover>
           )}
 
-          <Button
-            variant="outline"
-            size={"md"}
-            className="gap-2 border-[#8D8D8D] text-black"
-          >
-            Filter
-            <Icon icon="hugeicons:filter-horizontal" />
-          </Button>
+          {showFilter && (
+            <Select
+              value={filterValue}
+              onValueChange={(val) => onFilterChange?.(val)}
+            >
+              <SelectTrigger className="w-fit gap-2 border-[#8D8D8D] text-black">
+                <span>Filter</span>
+                <Icon icon="hugeicons:filter-horizontal" />
+              </SelectTrigger>
+              <SelectContent>
+                {filterOptions.map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
 
           {showSortBy && (
             <div className="relative">

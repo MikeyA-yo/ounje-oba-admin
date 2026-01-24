@@ -6,10 +6,14 @@ export async function getCoupons({
     page = 1,
     pageSize = 10,
     search = "",
+    sortBy = "created_at_desc",
+    status = "",
 }: {
     page?: number;
     pageSize?: number;
     search?: string;
+    sortBy?: string;
+    status?: string;
 }) {
     const supabase = await createClient();
     const from = (page - 1) * pageSize;
@@ -18,11 +22,32 @@ export async function getCoupons({
     let query = supabase
         .from("coupons")
         .select("*", { count: "exact" })
-        .range(from, to)
-        .order("created_at", { ascending: false });
+        .range(from, to);
+
+    // Sorting
+    switch (sortBy) {
+        case "created_at_desc":
+            query = query.order("created_at", { ascending: false });
+            break;
+        case "created_at_asc":
+            query = query.order("created_at", { ascending: true });
+            break;
+        case "value_desc":
+            query = query.order("discount_value", { ascending: false });
+            break;
+        case "value_asc":
+            query = query.order("discount_value", { ascending: true });
+            break;
+        default:
+            query = query.order("created_at", { ascending: false });
+    }
 
     if (search) {
         query = query.ilike("code", `%${search}%`);
+    }
+
+    if (status && status !== "All") {
+        query = query.eq("status", status.toLowerCase());
     }
 
     const { data, error, count } = await query;

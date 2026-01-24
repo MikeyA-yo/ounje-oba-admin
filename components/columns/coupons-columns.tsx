@@ -51,13 +51,14 @@ export const useCouponsColumns = (): ColumnDef<Coupon>[] => {
     },
     {
       id: "usage_limit",
-      accessorFn: (coupon) => `${coupon.usage_count} / ${coupon.usage_limit}`,
+      accessorFn: (coupon) =>
+        `${coupon.usage_count || 0} / ${coupon.usage_limit || "∞"}`,
       header: "Usage/Limit",
     },
     {
       id: "actions",
       header: "Actions",
-      cell: ({}) => {
+      cell: ({ }) => {
         // const couponId = row.original.id;
 
         return <Button variant={"ghost"}>View</Button>;

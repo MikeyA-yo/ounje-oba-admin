@@ -15,14 +15,19 @@ export default function Coupon() {
   const columns = useCouponsColumns();
   const [pageSize /*, setPageSize */] = useState(10);
   const [page /*, setPage */] = useState(1);
+  const [search, setSearch] = useState("");
+  const [sortBy, setSortBy] = useState("created_at_desc");
+  const [filter, setFilter] = useState("All");
 
   const { data, isLoading, refetch } = useQuery({
-    queryKey: ["coupons", page],
+    queryKey: ["coupons", page, search, sortBy, filter],
     queryFn: async () => {
       const { results, count } = await getCoupons({
         page,
         pageSize,
-        search: "",
+        search,
+        sortBy,
+        status: filter,
       });
       return { results, count };
     },
@@ -52,17 +57,32 @@ export default function Coupon() {
         ) : (
           <>
             <DisplayTable
-              title=""
+              title="Coupons"
               columns={columns}
               data={data.results}
               count={data.count}
               pageSize={pageSize}
               // setPageSize={(size) => setPageSize(size)}
-              showSearch={false}
-              // sortOptions={[
-              //   { key: "name", value: "Product Name" },
-              //   { key: "price", value: "Price" },
-              //   ]}
+              showSearch={true}
+              searchValue={search}
+              onSearchChange={setSearch}
+              showSortBy={true}
+              sortOptions={[
+                { key: "created_at_desc", value: "Newest First" },
+                { key: "created_at_asc", value: "Oldest First" },
+                { key: "value_desc", value: "Value (High-Low)" },
+                { key: "value_asc", value: "Value (Low-High)" },
+              ]}
+              onSortChange={setSortBy}
+              showFilter={true}
+              filterValue={filter}
+              onFilterChange={setFilter}
+              filterOptions={[
+                { label: "All Status", value: "All" },
+                { label: "Active", value: "Active" },
+                { label: "Inactive", value: "Inactive" },
+                { label: "Expired", value: "Expired" },
+              ]}
               refresh={async () => {
                 await refetch();
               }}
